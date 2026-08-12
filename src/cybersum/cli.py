@@ -157,6 +157,15 @@ def cmd_record(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_collect(args: argparse.Namespace) -> int:
+    """Run the ingestion collectors once. Needs provider credentials."""
+    from .collectors.pipeline import collect_all
+
+    _load_settings(args)
+    results = collect_all()
+    return 0 if all(results.values()) else 1
+
+
 def cmd_seed(args: argparse.Namespace) -> int:
     from evaluation.synthetic_data import seed_windows
 
@@ -195,6 +204,9 @@ def build_parser() -> argparse.ArgumentParser:
     rec.add_argument("--window", type=int, default=4)
     rec.add_argument("--out", help=f"defaults to {DEFAULT_CASSETTE}")
     rec.set_defaults(func=cmd_record)
+
+    collect = sub.add_parser("collect", help="run the ingestion collectors once")
+    collect.set_defaults(func=cmd_collect)
 
     seed = sub.add_parser("seed", help="write synthetic scenario windows")
     seed.add_argument("--windows", type=int, nargs="*", help="defaults to all five")

@@ -11,8 +11,8 @@ So three groups, arranged so each arrow moves one variable:
 
 | Group | Input | Prompt |
 |---|---|---|
-| **A** — baseline | 50 randomly sampled raw JSONB log rows | short generic summarisation prompt |
-| **B** — control | 50 randomly sampled raw JSONB log rows | the full Cybersum prompt |
+| **A** — baseline | the 50 most recent raw JSONB log rows | short generic summarisation prompt |
+| **B** — control | the 50 most recent raw JSONB log rows | the full Cybersum prompt |
 | **C** — Cybersum | the aggregated context | the full Cybersum prompt |
 
 A → B holds the data constant and changes the prompt. B → C holds the prompt
@@ -79,11 +79,17 @@ prompt over aggregated data is the best arm. Prompt engineering is not
 independently good; its value is contingent on whether the input can support what
 the prompt asks for.
 
+A note on the sample. The thesis describes it as random; the code takes the 50
+most recent rows by `event_timestamp`, and this repository preserves that rather
+than changing what was measured. Either way the argument is the same — a
+fixed-size slice of a table dominated by routine traffic usually misses the rare
+critical row — but "most recent" is what the numbers came from.
+
 **The benefit is concentrated in the severe windows.** Windows 2 and 3 show
 +0.11 and 0.00 — on a quiet day, a random sample and an aggregate say much the
 same thing. Windows 4 and 5 show +2.22 each. That is where a paused service and a
-critical DDoS score live, and a fifty-row sample from a table dominated by
-routine traffic will usually miss them. The judge on window 4, Group A:
+critical DDoS score live, and fifty rows from a table dominated by routine
+traffic will usually miss them. The judge on window 4, Group A:
 
 > *"The report incorrectly states that the infrastructure is stable, while the
 > ground truth shows the Main Web Portal service is Paused and DDoS status is
