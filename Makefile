@@ -49,6 +49,16 @@ demo-down:  ## Stop the database and discard its data
 test:  ## Unit tests: no database, no network
 	@$(PY) -m pytest tests -q
 
+gate:  ## Quality thresholds against the reference evaluation run
+	@$(PY) -m pytest tests/unit/test_quality_gate.py -q
+
+eval-report:  ## Reprint the reference results. No API calls.
+	@$(PY) -m evaluation.cli report --results evaluation/outputs/runs/2026-08-12
+
+eval-live:  ## Re-run the full experiment (~60 model calls, a few dollars)
+	@[ "$$CONFIRM" = 1 ] || (echo "~60 gpt-4o calls. Re-run with CONFIRM=1"; exit 1)
+	@$(DEMO_ENV) $(PY) -m evaluation.cli run --yes --out evaluation/outputs/runs/$$(date +%Y-%m-%d)
+
 test-all: db-up db-wait  ## Unit and integration tests
 	@$(DEMO_ENV) $(PY) -m pytest tests -q -m ""
 
@@ -61,4 +71,4 @@ typecheck:
 scan:  ## Fail if any internal identifier reached the tree
 	@$(PY) -m pytest tests/unit/test_no_internal_identifiers.py -q
 
-check: lint typecheck test scan  ## Everything CI runs
+check: lint typecheck test gate scan  ## Everything CI runs

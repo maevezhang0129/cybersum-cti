@@ -21,6 +21,7 @@ from typing import Any
 
 from cybersum.aggregation import Scope, aggregate
 from cybersum.config import LLMSettings
+from cybersum.grounding import check_grounding
 from cybersum.llm_client import model_name
 from cybersum.prompts import load_prompt
 from cybersum.retry import backoff_seconds, should_retry
@@ -219,6 +220,7 @@ def write_outputs(
                     "report": b.text,
                     "tokens": b.tokens,
                     "aggregated_context": b.context,
+                    "grounding": _grounding_record(b),
                     "scores": {
                         k: v for k, v in scores[(b.window_id, b.group)].items()
                         if k != "raw_runs"
@@ -232,6 +234,43 @@ def write_outputs(
         + "\n"
     )
     logger.info("Wrote results to %s", destination)
+
+
+def _grounding_record(briefing: Briefing) -> dict[str, Any]:
+    """Traceability alongside the judge's score.
+
+    The two measure different things and disagree usefully: a vague briefing
+    traces every figure it bothers to cite. Recording both per report is what
+    makes that visible instead of a footnote.
+    """
+    result = check_grounding(briefing.text, briefing.context)
+    return {
+        "checked": result.checked,
+        "grounded": len(result.grounded),
+        "skipped": len(result.skipped),
+        "ungrounded": [{"figure": f.raw, "context": f.snippet} for f in result.ungrounded],
+    }
+
+
+def grounding_summary(reports: list[dict[str, Any]]) -> str:
+    by_group: dict[str, list[int]] = {}
+    for record in reports:
+        g = record.get("grounding") or {}
+        stats = by_group.setdefault(record["group"], [0, 0, 0])
+        stats[0] += g.get("grounded", 0)
+        stats[1] += g.get("checked", 0)
+        stats[2] += len(g.get("ungrounded", []))
+
+    lines = ["", "Grounding (figures in the prose that trace back to the context):"]
+    for group in sorted(by_group):
+        grounded, checked, ungrounded = by_group[group]
+        share = f"{100 * grounded / checked:.0f}%" if checked else "n/a"
+        lines.append(
+            f"  Group {group}  {grounded}/{checked} = {share}"
+            f"   ({checked / 5:.1f} figures cited per report, {ungrounded} unexplained)"
+        )
+    lines.append("  Note: a briefing that cites nothing scores 100%. See docs/grounding.md.")
+    return "\n".join(lines)
 
 
 def summarise(rows: list[dict[str, Any]]) -> str:

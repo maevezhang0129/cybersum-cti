@@ -214,6 +214,17 @@ credentials, screenshots or telemetry. The Azure Functions entry point in
 [`adapters/azure_function/`](adapters/azure_function) is the deployment shape,
 59 lines translating between the runtime and the pipeline.
 
+## Documentation
+
+| | |
+|---|---|
+| [architecture.md](docs/architecture.md) | the three layers, and the schema-on-read weakness |
+| [findings.md](docs/findings.md) | the grounding failure, twice, and both fixes |
+| [grounding.md](docs/grounding.md) | the deterministic check, and what it cannot tell you |
+| [evaluation.md](docs/evaluation.md) | method, per-window scores, limitations |
+| [contracts.md](docs/contracts.md) | four properties a refactor breaks quietly |
+| [prompts.md](docs/prompts.md) | why two report prompts exist and stay separate |
+
 ## Research origin
 
 This began as a master's thesis at Stockholm University, Department of Computer

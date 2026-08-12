@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import argparse
 import csv
+import json
 import logging
 import os
 import sys
@@ -19,7 +20,15 @@ from cybersum.config import Settings
 from cybersum.llm_client import make_client
 from cybersum.storage import connect
 
-from .harness import GROUPS, Briefing, run_group, score_briefing, summarise, write_outputs
+from .harness import (
+    GROUPS,
+    Briefing,
+    grounding_summary,
+    run_group,
+    score_briefing,
+    summarise,
+    write_outputs,
+)
 from .synthetic_data import WINDOW_PROFILES
 
 
@@ -64,6 +73,7 @@ def cmd_run(args: argparse.Namespace) -> int:
 
     with (destination / "FINAL_three_group_results.csv").open() as handle:
         print(summarise(list(csv.DictReader(handle))))
+    print(grounding_summary(json.loads((destination / "all_reports.json").read_text())))
     return 0
 
 
@@ -86,6 +96,11 @@ def cmd_report(args: argparse.Namespace) -> int:
               f"{float(row['situational_awareness']):>6.2f} "
               f"{float(row['avg_score']):>5.2f}")
     print(summarise(rows))
+    reports = Path(args.results) / "all_reports.json"
+    if reports.is_file():
+        records = json.loads(reports.read_text())
+        if records and "grounding" in records[0]:
+            print(grounding_summary(records))
     return 0
 
 

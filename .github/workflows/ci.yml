@@ -27,6 +27,13 @@ jobs:
       - name: Unit tests
         run: pytest tests -q
 
+      # Thresholds against the committed reference evaluation, so a change that
+      # would have degraded the published result fails here rather than being
+      # noticed at the next manual re-run. Not a measurement -- no model is
+      # called; `make eval-live` is the measurement and is deliberately manual.
+      - name: Quality gate
+        run: pytest tests/unit/test_quality_gate.py -q
+
   integration:
     runs-on: ubuntu-latest
     services:
