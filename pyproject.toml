@@ -56,6 +56,15 @@ target-version = "py311"
 # failures must not lose a generated report.
 select = ["E", "F", "W", "I", "UP", "B", "SIM", "RUF", "BLE"]
 
+[tool.ruff.lint.per-file-ignores]
+# The collectors are carried over from the deployed system essentially
+# unchanged -- only internal identifiers were removed. They are evidence of
+# what ran, so they are not rewritten to satisfy style rules that would
+# require restructuring their error handling. Whitespace and import order
+# were fixed mechanically; the judgement calls below were not.
+"src/cybersum/collectors/*.py" = ["B904", "BLE001", "E501", "RUF001", "RUF002", "RUF003"]
+
+
 [tool.mypy]
 python_version = "3.11"
 files = ["src/cybersum"]
@@ -64,5 +73,13 @@ warn_redundant_casts = true
 disallow_untyped_defs = true
 # psycopg2 and azure.functions ship no stubs we depend on.
 [[tool.mypy.overrides]]
-module = ["psycopg2.*", "azure.*"]
+module = ["psycopg2.*", "azure.*", "requests.*", "dotenv.*"]
 ignore_missing_imports = true
+
+# The collectors are preserved from the deployed system rather than rewritten
+# -- see the matching note under [tool.ruff.lint.per-file-ignores]. Annotating
+# them would mean editing code kept as a record of what ran.
+[[tool.mypy.overrides]]
+module = "cybersum.collectors.*"
+disallow_untyped_defs = false
+check_untyped_defs = false
