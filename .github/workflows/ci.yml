@@ -1,0 +1,90 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - run: pip install -e ".[dev,collectors]"
+
+      - name: Lint
+        run: ruff check src tests adapters evaluation
+
+      - name: Type check
+        run: mypy src/cybersum
+
+      - name: Unit tests
+        run: pytest tests -q
+
+  integration:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: cybersum
+          POSTGRES_USER: cybersum
+          POSTGRES_PASSWORD: cybersum
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U cybersum"
+          --health-interval 2s --health-timeout 3s --health-retries 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - run: pip install -e ".[dev]"
+
+      - name: Apply schema
+        env:
+          PGPASSWORD: cybersum
+        run: psql -h localhost -U cybersum -d cybersum -v ON_ERROR_STOP=1 -f deploy/sql/001_schema.sql
+
+      - name: Integration tests
+        env:
+          DB_HOST: localhost
+          DB_PORT: "5432"
+          DB_NAME: cybersum
+          DB_USER: cybersum
+          DB_PASS: cybersum
+        run: pytest tests -q -m postgres
+
+  secrets:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: gitleaks
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - run: pip install -e ".[dev]"
+
+      # gitleaks finds credentials. This finds the other thing that must not be
+      # here: identifiers belonging to the organisation the system was deployed
+      # at. They are not secrets, so no scanner looks for them, and they are
+      # exactly what an extracted internal project leaks by accident.
+      - name: No internal identifiers
+        run: pytest tests/unit/test_no_internal_identifiers.py -q

@@ -59,10 +59,6 @@ typecheck:
 	@$(PY) -m mypy src/cybersum
 
 scan:  ## Fail if any internal identifier reached the tree
-	@! grep -rEil 'undrr|unisdr|un\.org|preventionweb|10\.210\.|mx-westeurope|openai\.azure\.com' \
-		--exclude-dir=.git --exclude-dir=.venv --exclude-dir=.staging \
-		--exclude-dir=__pycache__ . \
-		|| (echo 'FAIL: internal identifier found above' && exit 1)
-	@echo 'scan: clean'
+	@$(PY) -m pytest tests/unit/test_no_internal_identifiers.py -q
 
 check: lint typecheck test scan  ## Everything CI runs

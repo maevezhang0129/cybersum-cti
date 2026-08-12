@@ -65,8 +65,12 @@ def test_only_the_production_prompt_carries_the_data_side_channel() -> None:
 
 
 def test_no_prompt_names_the_host_organisation() -> None:
-    denied = ("undrr", "unisdr", "preventionweb", "un.org")
+    """Redundant with the repository-wide scan, and kept anyway: the production
+    prompt is the one file here that was edited to remove a name, so it is worth
+    checking at the point the edit was made. Patterns come from .denylist rather
+    than a second copy -- a duplicated denylist is one that drifts."""
+    from .test_no_internal_identifiers import DENY
+
     for name in prompt_names():
-        lowered = load_prompt(name).text.lower()
-        found = [d for d in denied if d in lowered]
-        assert not found, f"{name}.txt still names the host organisation"
+        match = DENY.search(load_prompt(name).text)
+        assert match is None, f"{name}.txt names an internal identifier"

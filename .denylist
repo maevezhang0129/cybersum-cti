@@ -1,0 +1,12 @@
+# Identifiers belonging to the organisation the system was deployed at.
+# Not secrets -- which is why no credential scanner looks for them, and why an
+# extracted internal project leaks them by accident. One line per regex.
+# Read by `make scan`, the CI secrets job, and tests/unit/test_no_internal_identifiers.py.
+# This file is the only place they are allowed to appear.
+undrr
+unisdr
+un\.org
+preventionweb
+10\.210\.
+mx-westeurope
+openai\.azure\.com
