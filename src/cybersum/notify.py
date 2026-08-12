@@ -12,7 +12,6 @@ import html
 import logging
 import re
 import smtplib
-import socket
 import time
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
@@ -45,7 +44,8 @@ _STATUS_LEGEND = """
                 margin-bottom:15px;font-size:11px;color:#666;line-height:1.4;">
         <b style="color:#333;display:block;margin-bottom:4px;">Status classification reference</b>
         <table style="width:100%;border-collapse:collapse;font-size:11px;">
-            <tr><td style="vertical-align:top;width:75px;"><span style="color:#28a745;">&#9679;</span>
+            <tr><td style="vertical-align:top;width:75px;">
+                <span style="color:#28a745;">&#9679;</span>
                 <b>STABLE:</b></td>
                 <td>No paused services; normal traffic; infrastructure healthy.</td></tr>
             <tr><td style="vertical-align:top;"><span style="color:#17a2b8;">&#9679;</span>
@@ -130,7 +130,8 @@ def build_message(
     )
     message["From"] = formataddr((settings.sender_name, settings.sender_email))
     message["To"] = ", ".join(settings.recipients)
-    message.attach(MIMEText(render_html(report_content, status_code, report_date, settings), "html"))
+    body = render_html(report_content, status_code, report_date, settings)
+    message.attach(MIMEText(body, "html"))
     return message
 
 
@@ -170,11 +171,11 @@ def send_security_report(
             # demands credentials, retrying will not help.
             logger.error("SMTP authentication rejected: %s", exc)
             return False
-        except (socket.timeout, smtplib.SMTPServerDisconnected, smtplib.SMTPConnectError) as exc:
+        except (TimeoutError, smtplib.SMTPServerDisconnected, smtplib.SMTPConnectError) as exc:
             logger.warning("SMTP transport failure (attempt %d/%d): %s", attempt, MAX_RETRIES, exc)
         except smtplib.SMTPException as exc:
             logger.warning("SMTP error (attempt %d/%d): %s", attempt, MAX_RETRIES, exc)
-        except Exception as exc:  # noqa: BLE001 - delivery must never raise
+        except Exception as exc:
             logger.warning("Unexpected send failure (attempt %d/%d): %s", attempt, MAX_RETRIES, exc)
         else:
             logger.info(

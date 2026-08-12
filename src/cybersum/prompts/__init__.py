@@ -18,7 +18,7 @@ from __future__ import annotations
 import hashlib
 import json
 from dataclasses import dataclass
-from functools import lru_cache
+from functools import cache, lru_cache
 from pathlib import Path
 
 PROMPT_DIR = Path(__file__).resolve().parent
@@ -32,7 +32,7 @@ class Prompt:
     sha256: str
 
 
-@lru_cache(maxsize=None)
+@cache
 def load_prompt(name: str) -> Prompt:
     path = PROMPT_DIR / f"{name}.txt"
     if not path.is_file():

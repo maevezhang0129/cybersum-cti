@@ -21,9 +21,10 @@ from __future__ import annotations
 
 import logging
 import re
+from collections.abc import Sequence
 from dataclasses import dataclass
-from datetime import datetime, timezone
-from typing import Any, Sequence
+from datetime import UTC, datetime
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -229,6 +230,12 @@ def trend_sql(scope: Scope) -> str:
         ORDER BY ds.day_label ASC;"""
 
 
+#: The default scope. A module-level singleton rather than ``Scope()`` in each
+#: signature: the value is frozen, so one shared instance is correct, and it
+#: gives the production path a name to refer to.
+PRODUCTION = Scope.production()
+
+
 SIGNAL_BUILDERS = {
     "firewall": firewall_sql,
     "uptime": uptime_sql,
@@ -265,7 +272,7 @@ def normalise_sql(sql: str) -> str:
 
 def _rows(cur: Any) -> list[dict[str, Any]]:
     columns = [d[0] for d in cur.description]
-    return [dict(zip(columns, row)) for row in cur.fetchall()]
+    return [dict(zip(columns, row, strict=True)) for row in cur.fetchall()]
 
 
 def _run(cur: Any, name: str, sql: str, params: Sequence[Any]) -> list[dict[str, Any]]:
@@ -283,45 +290,47 @@ def _run(cur: Any, name: str, sql: str, params: Sequence[Any]) -> list[dict[str,
         if not rows:
             logger.warning("Aggregation signal %r returned no rows.", name)
         return rows
-    except Exception as exc:  # noqa: BLE001 - one bad signal must not kill the run
+    except Exception as exc:
         logger.error("Aggregation signal %r failed: %s", name, exc)
         return []
 
 
-def get_firewall_stats(cur: Any, scope: Scope = Scope()) -> list[dict[str, Any]]:
+def get_firewall_stats(cur: Any, scope: Scope = PRODUCTION) -> list[dict[str, Any]]:
     return _run(cur, "firewall", firewall_sql(scope), scope.params)
 
 
-def get_total_blocked(cur: Any, scope: Scope = Scope()) -> int:
+def get_total_blocked(cur: Any, scope: Scope = PRODUCTION) -> int:
     rows = _run(cur, "total_blocked", total_blocked_sql(scope), scope.params)
     return int(rows[0]["total_blocked_events"]) if rows else 0
 
 
-def get_uptime_stats(cur: Any, scope: Scope = Scope()) -> list[dict[str, Any]]:
+def get_uptime_stats(cur: Any, scope: Scope = PRODUCTION) -> list[dict[str, Any]]:
     return _run(cur, "uptime", uptime_sql(scope), scope.params)
 
 
-def get_azure_stats(cur: Any, scope: Scope = Scope()) -> list[dict[str, Any]]:
+def get_azure_stats(cur: Any, scope: Scope = PRODUCTION) -> list[dict[str, Any]]:
     return _run(cur, "azure", azure_sql(scope), scope.params)
 
 
-def get_ddos_status(cur: Any, scope: Scope = Scope()) -> dict[str, Any]:
+def get_ddos_status(cur: Any, scope: Scope = PRODUCTION) -> dict[str, Any]:
     rows = _run(cur, "ddos", ddos_sql(scope), scope.params)
     return rows[0] if rows else {}
 
 
-def get_90day_trend(cur: Any, scope: Scope = Scope()) -> list[dict[str, Any]]:
+def get_90day_trend(cur: Any, scope: Scope = PRODUCTION) -> list[dict[str, Any]]:
     return _run(cur, "trend", trend_sql(scope), scope.params)
 
 
-def aggregate(conn: Any, scope: Scope = Scope(), *, now: datetime | None = None) -> dict[str, Any]:
+def aggregate(
+    conn: Any, scope: Scope = PRODUCTION, *, now: datetime | None = None
+) -> dict[str, Any]:
     """Run all signals and assemble the context handed to the model.
 
     The shape of this dict is a prompt input, not just a return value: the model
     is told to read ``total_blocked_events`` for the headline figure, and the
     abbreviated trend keys are explained by the note beside them.
     """
-    generated_at = now or datetime.now(timezone.utc)
+    generated_at = now or datetime.now(UTC)
     with conn.cursor() as cur:
         return {
             "report_generated_at": generated_at.isoformat() if scope.timestamps_as_iso
