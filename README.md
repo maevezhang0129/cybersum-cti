@@ -24,19 +24,24 @@ A three-group experiment over five synthetic scenario windows, scored blind by
 GPT-4o on factual accuracy, completeness and situational awareness (1–5, mean of
 three judging runs):
 
-| Group | Input | Prompt | Mean score |
-|---|---|---|---|
-| **A** baseline | 50 raw log rows | short generic prompt | **2.94** |
-| **B** control | 50 raw log rows | full structured prompt | **2.07** |
-| **C** Cybersum | aggregated context | full structured prompt | **4.09** |
+| Group | Input | Prompt | Thesis run | Current |
+|---|---|---|---|---|
+| **A** baseline | 50 raw log rows | short generic prompt | 2.94 | **2.67** |
+| **B** control | 50 raw log rows | full structured prompt | 2.07 | **1.80** |
+| **C** Cybersum | aggregated context | full structured prompt | 4.09 | **4.91** |
 
 Reading the arrows rather than the rows:
 
-| Comparison | Variable isolated | Effect |
-|---|---|---|
-| A → B | prompt only, data held constant | **−0.87** |
-| B → C | data only, prompt held constant | **+2.02** |
-| A → C | combined | **+1.15** |
+| Comparison | Variable isolated | Thesis run | Current |
+|---|---|---|---|
+| A → B | prompt only, data held constant | −0.87 | **−0.87** |
+| B → C | data only, prompt held constant | +2.02 | **+3.11** |
+| A → C | combined | +1.15 | **+2.25** |
+
+Two runs a few months apart, on independently regenerated data, judged
+independently. Absolute levels moved — every group scored a little lower — but
+**the prompt effect is −0.87 in both**, because A and B moved together. B → C
+grew because Group C got better: see below.
 
 **The structured prompt made things worse when applied to raw logs.** Asking a
 model for a precise status classification and a specific set of metrics, over a
@@ -45,8 +50,8 @@ things it cannot see. The same prompt over the aggregated context is the best
 performer by a wide margin.
 
 The gap widens exactly where it matters. In the two most severe windows — a
-paused service and a critical DDoS score — the baseline scored 2.00 and 1.89
-while Cybersum scored 4.22 and 4.11. A random sample of fifty rows tends to miss
+paused service and a critical DDoS score — the baseline scored 2.00 and 2.00
+while Cybersum scored 5.00 and 5.00. A random sample of fifty rows tends to miss
 low-frequency critical signals, and a briefing that reports a crisis as a quiet
 day is worse than no briefing.
 
@@ -56,9 +61,9 @@ Full method, per-window scores and judge rationales: [docs/evaluation.md](docs/e
 
 ## A grounding failure worth reading
 
-Group C's factual accuracy tops out at **3.13** while its completeness reaches
-4.47. It sees everything and still gets a number wrong — the same number, in all
-five windows:
+In the thesis run, Group C's factual accuracy topped out at **3.13** while its
+completeness reached 4.47. It was seeing everything and still getting a number
+wrong — the same number, in all five windows:
 
 | Window | Reported blocked events | Actual | Sum of the top-5 rows |
 |---|---|---|---|
@@ -76,9 +81,16 @@ sample was drawn from, it added up the sample.
 
 That is not a missing-data problem or a missing-instruction problem, and the fix
 is not more prompt. It is a context-design problem: an itemised list adjacent to
-its own total invites arithmetic. [docs/findings.md](docs/findings.md) has the
-reproduction, the fix, and a note on where this differs from the explanation
-given in the thesis.
+its own total invites arithmetic.
+
+**Fixed.** The aggregate is now emitted first, computed over exactly the rows the
+sample is drawn from, and the sample is labelled as a subset that does not sum to
+it. In the re-run, Group C reports the correct total in **5 of 5** windows and
+factual accuracy goes **3.13 → 5.00** — which is most of why B → C grew from
++2.02 to +3.11.
+
+[docs/findings.md](docs/findings.md) has the reproduction, the fix, and a note on
+where this differs from the explanation given in the thesis.
 
 ---
 
@@ -114,7 +126,7 @@ Without a key the model call is replayed from a completion recorded from a live
 | | |
 |---|---|
 | `make demo` | database → seed → briefing |
-| `make test` | 79 tests, no database, no network |
+| `make test` | 167 tests, no database, no network |
 | `make test-all` | adds 18 integration tests against PostgreSQL |
 | `make check` | lint, types, tests, and a scan for internal identifiers |
 
@@ -160,6 +172,9 @@ To keep the claim that this is the same system honest:
   thesis results unchanged, with a README documenting a real drift: the recorded
   ground-truth context contains a field no surviving code emits, so those exact
   numbers are archive rather than something the current harness reproduces.
+- [`evaluation/outputs/runs/2026-08-12/`](evaluation/outputs/runs/2026-08-12) is
+  what the current code actually produces, from `python -m evaluation.cli run`.
+  `evaluation.cli compare` puts the two side by side.
 
 ## What this does not show
 
@@ -204,17 +219,16 @@ states the current reading and says so explicitly. See
 
 Next, in order:
 
-1. **Quantify the grounding fix.** The aggregate is in the context; the
-   evaluation has not yet been re-run over all five windows to measure what it
-   moves. That is the number that belongs in the table above.
-2. **A numeric grounding check.** Every figure in the prose should be traceable
+1. **A numeric grounding check.** Every figure in the prose should be traceable
    to a field in the context, deterministically, before delivery. The finding
-   above becomes a product feature.
-3. **Evaluation as a gate.** `make eval` in CI over a fixed fixture, failing when
+   above becomes a product feature. Group C is at 5.00 on factual accuracy with
+   nothing enforcing it — that is a property of this model on this data, not a
+   guarantee.
+2. **Evaluation as a gate.** `make eval` in CI over a fixed fixture, failing when
    the score drops.
-4. **Model comparison.** The provider seam is already there; running the same
+3. **Model comparison.** The provider seam is already there; running the same
    evaluation across models is a small step and a useful result.
-5. **Human validation of the judge.** The thesis planned a blind human panel and
+4. **Human validation of the judge.** The thesis planned a blind human panel and
    used G-Eval instead. Closing that gap is what would make the scores mean
    something outside this repository.
 

@@ -5,8 +5,11 @@
 local.settings.json
 appsettings.json
 
-# Live evaluation runs (published/ is committed history; runs/ is not)
-evaluation/outputs/runs/
+# Ad-hoc evaluation runs. published/ is the thesis archive and runs/2026-08-12
+# is the current reference result; both are committed. Everything else is
+# someone's local experiment.
+evaluation/outputs/runs/*
+!evaluation/outputs/runs/2026-08-12/
 
 # Python
 __pycache__/

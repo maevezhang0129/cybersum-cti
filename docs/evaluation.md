@@ -40,7 +40,7 @@ which arm it is reading. The rubric is a single file
 assertion in the test suite keeps it that way, because two copies of a rubric
 means two judges and an incomparable table.
 
-## Results
+## Results — the thesis run
 
 Group means across all five windows:
 
@@ -100,6 +100,28 @@ have to.
 4.47. That gap is one specific, reproducible error, and it has its own writeup:
 [findings.md](findings.md).
 
+## The re-run
+
+`evaluation/outputs/runs/2026-08-12/` is the same experiment on the current code,
+with the grounding fix in place and data regenerated from a different seed:
+
+| | Thesis run | Re-run |
+|---|---|---|
+| Group A | 2.94 | 2.67 |
+| Group B | 2.07 | 1.80 |
+| Group C | 4.09 | **4.91** |
+| A → B | −0.87 | **−0.87** |
+| B → C | +2.02 | **+3.11** |
+| A → C | +1.15 | **+2.25** |
+
+Group C's factual accuracy went 3.13 → 5.00, which accounts for most of the
+change. Groups A and B each fell 0.27, so the prompt effect is unchanged at
+−0.87 — an effect measured twice, on different data, by different judging
+sessions.
+
+`python -m evaluation.cli compare evaluation/outputs/published evaluation/outputs/runs/2026-08-12`
+prints them window by window.
+
 ## Limitations
 
 - **One judge, unvalidated.** GPT-4o scoring GPT-4o output. No human evaluation
@@ -114,11 +136,15 @@ have to.
 - **The side channel was never tested.** The evaluation prompt omits the
   `###DATA_START###` instruction, so these results measure the prose contract
   only. See [prompts.md](prompts.md).
-- **The archive does not reproduce.** These numbers came from code that has since
-  been refactored, and one field in the recorded ground truth is emitted by no
-  surviving code. `evaluation/outputs/published/README.md` documents it. They are
-  preserved as the thesis reported them; re-running the harness today produces a
-  different context shape and therefore different scores.
+- **The archive does not reproduce.** The thesis numbers came from code that has
+  since been refactored, and one field in their recorded ground truth is emitted
+  by no surviving code — `evaluation/outputs/published/README.md` documents it.
+  They are preserved as reported. The re-run above is what the current code
+  produces, and the two are not the same measurement: different data seed,
+  different judging session, and a fixed aggregation.
+- **Scores are not comparable across runs, only within one.** Groups A and B each
+  fell 0.27 between runs with no relevant change to either arm. Read the arrows,
+  not the absolute levels.
 
 ## Files
 
@@ -127,4 +153,4 @@ have to.
 | `evaluation/outputs/published/FINAL_three_group_results.csv` | the headline table |
 | `evaluation/outputs/published/geval_scores_v3_mean3runs.csv` | per-dimension scores with judge rationales |
 | `evaluation/outputs/published/all_reports.json` | every generated briefing and the context it was given |
-| `evaluation/outputs/runs/` | live re-runs (gitignored) |
+| `evaluation/outputs/runs/2026-08-12/` | the current reference re-run |

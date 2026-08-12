@@ -2,9 +2,12 @@
 
 ## What happened
 
-In the three-group evaluation, Group C — aggregated context, full prompt — reached
+In the thesis evaluation, Group C — aggregated context, full prompt — reached
 4.47 on completeness and 4.67 on situational awareness, but stalled at **3.13 on
 factual accuracy**. It was seeing everything and still getting something wrong.
+
+It is fixed; the fix and its measurement are at the end. The diagnosis is the
+part worth reading.
 
 The same thing, in all five scenario windows:
 
@@ -97,8 +100,8 @@ def test_total_is_larger_than_the_sum_of_the_top_five(db):
 
 ## Does the fix work
 
-One window, one call each, `gpt-4o` at temperature 0.2, identical prompt, the
-only difference being whether the aggregate and its note are present:
+First, a single window, one call each, `gpt-4o` at temperature 0.2, identical
+prompt, the only difference being whether the aggregate and its note are present:
 
 | Context | Reported |
 |---|---|
@@ -106,16 +109,51 @@ only difference being whether the aggregate and its note are present:
 | without `total_blocked_events` | 1,500 |
 | with `total_blocked_events` | **2,592** |
 
-Two observations. The fix produced the exact figure. And without the aggregate
-the model did not fall back on the top-five sum (1,397) — it reported 1,500, a
-number lifted from the trend data. Deprived of the right answer it will find
-*some* number; the specific wrong number is not stable, which is its own argument
-against treating a plausible figure as a grounded one.
+Two things. The fix produced the exact figure. And without the aggregate the
+model did not fall back on the top-five sum (1,397) — it reported 1,500, lifted
+from the trend data. Deprived of the right answer it will find *some* number, and
+the specific wrong number is not stable. That is its own argument against
+treating a plausible figure as a grounded one.
 
-This is n=1 per arm. It shows the failure reproduces and the change removes it in
-that instance. It is not a measurement of effect size. Re-running the full
-three-group evaluation is the first item on the roadmap, and until it is done the
-score table in the README reports the original numbers, not improved ones.
+### The full re-run
+
+The three-group evaluation was then re-run over all five windows with the fixed
+aggregation (`evaluation/outputs/runs/2026-08-12/`). Group C now reports the
+correct total in **five windows out of five**:
+
+| Window | Truth | Sum of top-5 | Reported |
+|---|---|---|---|
+| 1 | 2,304 | 1,192 | **correct** |
+| 2 | 9,240 | 4,738 | **correct** |
+| 3 | 11,283 | 5,766 | **correct** |
+| 4 | 11,716 | 6,104 | **correct** |
+| 5 | 12,122 | 6,241 | **correct** |
+
+And the dimension that was stuck moved:
+
+| | Thesis run | Re-run |
+|---|---|---|
+| Group C factual accuracy | 3.13 | **5.00** |
+| Group C overall | 4.09 | **4.91** |
+| B → C effect | +2.02 | **+3.11** |
+
+The ceiling was this error and nothing else. With it gone, Group C scores 5.00 on
+factual accuracy in every window.
+
+### What the re-run also says about the rest
+
+Absolute levels drifted between runs — Groups A and B each fell 0.27 — which is
+what a different data seed and a different judging session look like. The
+**prompt effect did not**: A → B is −0.87 in both runs, because A and B moved
+together. An effect that survives regenerated data and independent judging is
+more believable than one measured once.
+
+Two caveats worth keeping. Five perfect scores invite suspicion, so the judge's
+rationales were read rather than assumed: they name the paused service, the DDoS
+status and the blocked total specifically, rather than offering generic praise.
+And nothing *enforces* the correct total — Group C scoring 5.00 is a property of
+this model on this data, not a guarantee. That is why a deterministic numeric
+grounding check is the first item on the roadmap rather than a nice-to-have.
 
 ## What it suggests more generally
 
@@ -126,8 +164,8 @@ score table in the README reports the original numbers, not improved ones.
   is easiest to reach.
 - **This class of error is invisible downstream.** A hallucinated total is
   well-formed and plausible. Catching it needs a check that ties each figure in
-  the prose back to a field in the context — which is why that is roadmap item 2
-  rather than a nice-to-have.
+  the prose back to a field in the context — which is why that is the first item
+  on the roadmap.
 - **The evaluation earned its keep by finding a bug.** Not by producing a score.
   An LLM evaluation harness that only produces scores is a report; one that
   surfaces a reproducible defect is a test suite.
