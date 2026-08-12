@@ -1,0 +1,371 @@
+{
+  "report_generated_at": "2026-02-24T08:51:25.726044",
+  "period": "Last 24 Hours",
+  "security_summary": {
+    "top_attacks": [
+      {
+        "target_host": "www.site1.org",
+        "attacker_country": "US",
+        "block_count": 56
+      },
+      {
+        "target_host": "api.site2.org",
+        "attacker_country": "US",
+        "block_count": 10
+      },
+      {
+        "target_host": "login.site3.org",
+        "attacker_country": "US",
+        "block_count": 5
+      },
+      {
+        "target_host": "www.site1.org",
+        "attacker_country": "CA",
+        "block_count": 4
+      },
+      {
+        "target_host": "cdn.site4.org",
+        "attacker_country": "US",
+        "block_count": 1
+      }
+    ],
+    "ddos_status": {
+      "event_timestamp": "2026-02-24T07:57:59.805988+00:00",
+      "health_status": "SAFE",
+      "risk_score": 20.5,
+      "malicious_percent": 21.0
+    }
+  },
+  "infrastructure_health": {
+    "abnormal_services": [
+      {
+        "service_name": "Portal User Login",
+        "service_url": "https://www.site1.org/user/login",
+        "status_text": "Paused"
+      }
+    ],
+    "azure_resource_usage": [
+      {
+        "time_bucket": "2026-02-24 07:00",
+        "avg_memory_mb": 5589.06,
+        "max_cpu_load": 44.81
+      },
+      {
+        "time_bucket": "2026-02-24 06:00",
+        "avg_memory_mb": 5500.71,
+        "max_cpu_load": 41.07
+      },
+      {
+        "time_bucket": "2026-02-24 05:00",
+        "avg_memory_mb": 5701.62,
+        "max_cpu_load": 34.57
+      },
+      {
+        "time_bucket": "2026-02-24 04:00",
+        "avg_memory_mb": 5644.47,
+        "max_cpu_load": 32.76
+      },
+      {
+        "time_bucket": "2026-02-24 03:00",
+        "avg_memory_mb": 5527.49,
+        "max_cpu_load": 36.26
+      },
+      {
+        "time_bucket": "2026-02-24 02:00",
+        "avg_memory_mb": 5654.76,
+        "max_cpu_load": 43.41
+      },
+      {
+        "time_bucket": "2026-02-24 01:00",
+        "avg_memory_mb": 5399.29,
+        "max_cpu_load": 31.32
+      },
+      {
+        "time_bucket": "2026-02-24 00:00",
+        "avg_memory_mb": 5461.96,
+        "max_cpu_load": 43.99
+      },
+      {
+        "time_bucket": "2026-02-23 23:00",
+        "avg_memory_mb": 5368.61,
+        "max_cpu_load": 37.53
+      },
+      {
+        "time_bucket": "2026-02-23 22:00",
+        "avg_memory_mb": 5273.0,
+        "max_cpu_load": 35.36
+      },
+      {
+        "time_bucket": "2026-02-23 21:00",
+        "avg_memory_mb": 5285.51,
+        "max_cpu_load": 45.04
+      },
+      {
+        "time_bucket": "2026-02-23 20:00",
+        "avg_memory_mb": 5156.91,
+        "max_cpu_load": 39.48
+      },
+      {
+        "time_bucket": "2026-02-23 19:00",
+        "avg_memory_mb": 5125.86,
+        "max_cpu_load": 43.91
+      },
+      {
+        "time_bucket": "2026-02-23 18:00",
+        "avg_memory_mb": 5313.15,
+        "max_cpu_load": 61.31
+      },
+      {
+        "time_bucket": "2026-02-23 17:00",
+        "avg_memory_mb": 5167.65,
+        "max_cpu_load": 50.74
+      },
+      {
+        "time_bucket": "2026-02-23 16:00",
+        "avg_memory_mb": 5836.39,
+        "max_cpu_load": 42.05
+      },
+      {
+        "time_bucket": "2026-02-23 15:00",
+        "avg_memory_mb": 5945.07,
+        "max_cpu_load": 52.61
+      },
+      {
+        "time_bucket": "2026-02-23 14:00",
+        "avg_memory_mb": 5861.38,
+        "max_cpu_load": 37.11
+      },
+      {
+        "time_bucket": "2026-02-23 13:00",
+        "avg_memory_mb": 5957.96,
+        "max_cpu_load": 34.98
+      },
+      {
+        "time_bucket": "2026-02-23 12:00",
+        "avg_memory_mb": 5955.69,
+        "max_cpu_load": 35.85
+      },
+      {
+        "time_bucket": "2026-02-23 11:00",
+        "avg_memory_mb": 5924.54,
+        "max_cpu_load": 37.01
+      },
+      {
+        "time_bucket": "2026-02-23 10:00",
+        "avg_memory_mb": 5791.26,
+        "max_cpu_load": 29.19
+      },
+      {
+        "time_bucket": "2026-02-23 09:00",
+        "avg_memory_mb": 5992.59,
+        "max_cpu_load": 36.88
+      },
+      {
+        "time_bucket": "2026-02-23 08:00",
+        "avg_memory_mb": 5867.04,
+        "max_cpu_load": 40.92
+      }
+    ]
+  },
+  "historical_trends": {
+    "description": "90-day attack trends analysis",
+    "metadata": {
+      "date_format": "MM-DD",
+      "date_key": "date",
+      "attack_count_key": "attack_count",
+      "top_action_key": "top_action"
+    },
+    "data": [
+      {
+        "date": "01-12",
+        "attack_count": 20.0,
+        "top_action": "block"
+      },
+      {
+        "date": "01-14",
+        "attack_count": 20.0,
+        "top_action": "managed_challenge"
+      },
+      {
+        "date": "01-21",
+        "attack_count": 360.0,
+        "top_action": "managed_challenge"
+      },
+      {
+        "date": "01-22",
+        "attack_count": 480.0,
+        "top_action": "managed_challenge"
+      },
+      {
+        "date": "01-23",
+        "attack_count": 480.0,
+        "top_action": "managed_challenge"
+      },
+      {
+        "date": "01-24",
+        "attack_count": 480.0,
+        "top_action": "managed_challenge"
+      },
+      {
+        "date": "01-25",
+        "attack_count": 480.0,
+        "top_action": "managed_challenge"
+      },
+      {
+        "date": "01-26",
+        "attack_count": 480.0,
+        "top_action": "managed_challenge"
+      },
+      {
+        "date": "01-27",
+        "attack_count": 480.0,
+        "top_action": "managed_challenge"
+      },
+      {
+        "date": "01-28",
+        "attack_count": 480.0,
+        "top_action": "managed_challenge"
+      },
+      {
+        "date": "01-29",
+        "attack_count": 480.0,
+        "top_action": "managed_challenge"
+      },
+      {
+        "date": "01-30",
+        "attack_count": 480.0,
+        "top_action": "managed_challenge"
+      },
+      {
+        "date": "01-31",
+        "attack_count": 480.0,
+        "top_action": "managed_challenge"
+      },
+      {
+        "date": "02-01",
+        "attack_count": 480.0,
+        "top_action": "managed_challenge"
+      },
+      {
+        "date": "02-02",
+        "attack_count": 480.0,
+        "top_action": "managed_challenge"
+      },
+      {
+        "date": "02-03",
+        "attack_count": 500.0,
+        "top_action": "managed_challenge"
+      },
+      {
+        "date": "02-04",
+        "attack_count": 480.0,
+        "top_action": "managed_challenge"
+      },
+      {
+        "date": "02-05",
+        "attack_count": 480.0,
+        "top_action": "managed_challenge"
+      },
+      {
+        "date": "02-06",
+        "attack_count": 480.0,
+        "top_action": "managed_challenge"
+      },
+      {
+        "date": "02-07",
+        "attack_count": 480.0,
+        "top_action": "managed_challenge"
+      },
+      {
+        "date": "02-08",
+        "attack_count": 480.0,
+        "top_action": "managed_challenge"
+      },
+      {
+        "date": "02-09",
+        "attack_count": 480.0,
+        "top_action": "managed_challenge"
+      },
+      {
+        "date": "02-10",
+        "attack_count": 480.0,
+        "top_action": "managed_challenge"
+      },
+      {
+        "date": "02-11",
+        "attack_count": 480.0,
+        "top_action": "managed_challenge"
+      },
+      {
+        "date": "02-12",
+        "attack_count": 480.0,
+        "top_action": "managed_challenge"
+      },
+      {
+        "date": "02-13",
+        "attack_count": 480.0,
+        "top_action": "managed_challenge"
+      },
+      {
+        "date": "02-14",
+        "attack_count": 480.0,
+        "top_action": "managed_challenge"
+      },
+      {
+        "date": "02-15",
+        "attack_count": 480.0,
+        "top_action": "managed_challenge"
+      },
+      {
+        "date": "02-16",
+        "attack_count": 480.0,
+        "top_action": "managed_challenge"
+      },
+      {
+        "date": "02-17",
+        "attack_count": 480.0,
+        "top_action": "managed_challenge"
+      },
+      {
+        "date": "02-18",
+        "attack_count": 480.0,
+        "top_action": "skip"
+      },
+      {
+        "date": "02-19",
+        "attack_count": 480.0,
+        "top_action": "skip"
+      },
+      {
+        "date": "02-20",
+        "attack_count": 470.0,
+        "top_action": "managed_challenge"
+      },
+      {
+        "date": "02-21",
+        "attack_count": 480.0,
+        "top_action": "managed_challenge"
+      },
+      {
+        "date": "02-22",
+        "attack_count": 480.0,
+        "top_action": "skip"
+      },
+      {
+        "date": "02-23",
+        "attack_count": 470.0,
+        "top_action": "managed_challenge"
+      },
+      {
+        "date": "02-24",
+        "attack_count": 160.0,
+        "top_action": "skip"
+      },
+      {
+        "date": "12-09",
+        "attack_count": 20.0,
+        "top_action": "managed_challenge"
+      }
+    ]
+  }
+}

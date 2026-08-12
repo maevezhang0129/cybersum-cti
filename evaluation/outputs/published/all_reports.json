@@ -1,0 +1,324 @@
+[
+  {
+    "window_id": 1,
+    "scenario": "STABLE",
+    "baseline_report": "**Security Report Summary**\n\n**Overall Threat Assessment:**\nThe security logs indicate a moderate level of threat activity primarily targeting web resources. The majority of the threats were effectively mitigated by the firewall, with numerous block actions recorded. The threats originated from various countries, with a notable frequency from the United States, China, and Russia, suggesting a diverse range of potential threat actors.\n\n**Notable Events:**\n1. **Frequent Block Actions:** There were multiple instances of IP addresses being blocked, particularly from the United States, China, and Russia, targeting domains such as \"www.site1.org\", \"api.site2.org\", and \"cdn.site4.org\". This suggests a concerted effort to access these resources, possibly indicating targeted attacks or probing activities.\n2. **Managed Challenges:** Several managed challenges were issued, particularly to IPs from the United States and China, indicating attempts to verify the legitimacy of certain requests before allowing access.\n3. **Allow and Skip Actions:** A few requests were allowed or skipped, indicating that some traffic was deemed non-threatening or legitimate, such as an allowed request from China to \"login.site3.org\".\n\n**Infrastructure Status:**\nThe backend infrastructure, monitored via Azure, appears stable with consistent memory and CPU usage. Memory usage ranged from approximately 3000 to 3900 MiB, and CPU usage remained stable around 30 to 36 seconds per monitoring window. This suggests that the infrastructure is handling the current load effectively without signs of resource exhaustion or performance degradation.\n\n**Conclusion:**\nThe security infrastructure is functioning effectively, with the firewall successfully blocking potentially harmful traffic. However, the frequency of blocked attempts from specific countries suggests a need for continued vigilance and possibly enhanced monitoring or additional security measures for high-target domains. The backend systems are performing well, indicating a robust infrastructure capable of managing current demands.",
+    "baseline_tokens": {
+      "prompt": 3119,
+      "completion": 368,
+      "total": 3487
+    },
+    "cybersum_report": "EXECUTIVE SUMMARY\n\nThe overall security posture of the last 24 hours indicates a stable environment with no significant disruptions. The system is currently classified as STABLE. During this period, a total of 1,235 blocked events were recorded. The majority of these attempts originated from the United States, with a smaller portion from China. The infrastructure remains healthy, and all services are operational without any interruptions.\n\nTECHNICAL BRIEF\n\n- Services Status: All services are operating normally with no services currently in an abnormal state.\n- Server Infrastructure Health: \n  - Peak CPU load was observed at 36.45% at 17:00.\n  - The highest average memory usage was 3,909.88 MB during the same period.\n- Recent Attack Trends:\n  - The top attack actions continue to be blocking attempts, with a consistent pattern of blocks over the past months.\n  - The highest number of blocked events in the last 24 hours were directed at login.site3.org, api.site2.org, and cdn.site4.org, predominantly from the United States.\n- DDoS Status: The system remains in a SAFE state with a low risk score of 5.0 and a malicious traffic percentage of 5.0.",
+    "cybersum_tokens": {
+      "prompt": 4363,
+      "completion": 252,
+      "total": 4615
+    },
+    "cybersum_context_size": 6678,
+    "aggregated_context": {
+      "total_blocked_events": 2275,
+      "security_summary": {
+        "top_attacks": [
+          {
+            "h": "login.site3.org",
+            "cc": "United States",
+            "n": 285
+          },
+          {
+            "h": "api.site2.org",
+            "cc": "United States",
+            "n": 277
+          },
+          {
+            "h": "cdn.site4.org",
+            "cc": "United States",
+            "n": 268
+          },
+          {
+            "h": "www.site1.org",
+            "cc": "United States",
+            "n": 254
+          },
+          {
+            "h": "api.site2.org",
+            "cc": "China",
+            "n": 151
+          }
+        ],
+        "ddos_status": {
+          "h": "SAFE",
+          "rs": 5.0,
+          "mp": 5.0
+        }
+      },
+      "infrastructure_health": {
+        "abnormal_services": [],
+        "azure_peak": {
+          "peak_cpu_pct": 36.45,
+          "peak_mem_mib": 3909.88
+        }
+      }
+    }
+  },
+  {
+    "window_id": 2,
+    "scenario": "STATUS_A",
+    "baseline_report": "**Security Situation Report: May 29, 2026**\n\n**Overall Threat Assessment:**\nThe security logs indicate a moderate level of threat activity primarily targeting web resources across various sites. The majority of the threats were effectively mitigated through the use of firewall blocks and managed challenges, indicating a robust defensive posture. However, the frequency and diversity of the attack origins suggest a persistent threat environment.\n\n**Notable Events:**\n1. **High Frequency of Blocked Attempts:** A significant number of access attempts were blocked, particularly from IP addresses originating in China, Russia, and the United States. This suggests targeted attempts to breach or probe the infrastructure.\n2. **Managed Challenges:** There were numerous instances where managed challenges were issued, indicating suspicious activity that warranted additional verification. This was notably prevalent for requests targeting \"www.site1.org\" and \"login.site3.org.\"\n3. **Geographical Distribution of Threats:** The logs show a diverse range of countries from which suspicious activities originated, including China, Russia, the United States, and Germany. This highlights the global nature of the threat landscape.\n4. **Targeted Resources:** The most frequently targeted resources were \"www.site1.org,\" \"login.site3.org,\" and \"api.site2.org,\" suggesting these may be high-value targets or perceived as vulnerable by attackers.\n\n**Infrastructure Status:**\nThe backend infrastructure appears to be stable with consistent monitoring of resource utilization. Memory usage fluctuated between 4280.68 MiB and 5654.2 MiB, while CPU usage was maintained within a reasonable range, peaking at 62.17 total seconds. There are no indications of resource exhaustion or performance degradation, suggesting that the infrastructure is handling the current threat load effectively.\n\n**Recommendations:**\n- Continue monitoring for any unusual spikes in blocked attempts or managed challenges, particularly from high-risk regions.\n- Review and update firewall rules and managed challenge protocols to ensure they remain effective against evolving threats.\n- Consider conducting a security audit of the most frequently targeted resources to identify and mitigate potential vulnerabilities.\n- Maintain vigilance in monitoring resource utilization to preemptively address any potential performance issues.",
+    "baseline_tokens": {
+      "prompt": 3347,
+      "completion": 427,
+      "total": 3774
+    },
+    "cybersum_report": "EXECUTIVE SUMMARY\n\nIn the past 24 hours, our cybersecurity systems have maintained a robust defense against external threats. The overall security posture is strong, with no services paused and infrastructure performing within normal parameters. The CURRENT SYSTEM STATUS is STABLE. A total of 4,830 blocked events were recorded, with the majority originating from the United States and China. This indicates a consistent level of threat activity, but our defenses are effectively managing these attempts.\n\nTECHNICAL BRIEF\n\n- Services Status: All services are operating normally with no abnormalities reported.\n- Server Infrastructure Health:\n  - Peak Memory Usage: 5,654.2 MB at 17:00\n  - Peak CPU Load: 62.17% at 17:00\n- Attack Trends:\n  - The highest number of blocked events targeted \"login.site3.org\" and \"api.site2.org\" from the United States.\n  - The DDoS risk remains low with a risk score of 15.0 and a malicious traffic percentage of 12.0%.\n  - Historical data shows consistent blocking activity, with a slight increase in recent days, peaking at 203 blocks on May 21.\n- Key Metrics:\n  - Total Blocked Events: 4,830\n  - Top Attacker Countries: United States, China\n  - Infrastructure remains healthy with no critical failures or service disruptions.",
+    "cybersum_tokens": {
+      "prompt": 4394,
+      "completion": 281,
+      "total": 4675
+    },
+    "cybersum_context_size": 6802,
+    "aggregated_context": {
+      "total_blocked_events": 9302,
+      "security_summary": {
+        "top_attacks": [
+          {
+            "h": "login.site3.org",
+            "cc": "United States",
+            "n": 1095
+          },
+          {
+            "h": "api.site2.org",
+            "cc": "United States",
+            "n": 1053
+          },
+          {
+            "h": "www.site1.org",
+            "cc": "United States",
+            "n": 1049
+          },
+          {
+            "h": "cdn.site4.org",
+            "cc": "United States",
+            "n": 1032
+          },
+          {
+            "h": "login.site3.org",
+            "cc": "China",
+            "n": 601
+          }
+        ],
+        "ddos_status": {
+          "h": "SAFE",
+          "rs": 15.0,
+          "mp": 12.0
+        }
+      },
+      "infrastructure_health": {
+        "abnormal_services": [],
+        "azure_peak": {
+          "peak_cpu_pct": 62.17,
+          "peak_mem_mib": 5654.2
+        }
+      }
+    }
+  },
+  {
+    "window_id": 3,
+    "scenario": "STATUS_B",
+    "baseline_report": "**Security Report: May 29, 2026**\n\n**Overall Threat Assessment:**\nThe security logs indicate a moderate level of threat activity primarily focused on blocking unauthorized access attempts across various sites. The majority of these attempts were successfully mitigated by the firewall, with a significant number of actions categorized as \"block\" or \"managed challenge.\" There is a noticeable pattern of repeated access attempts from certain countries, suggesting potential targeted attacks or probing activities.\n\n**Notable Events:**\n1. **High Volume of Blocks:** A substantial number of access attempts were blocked, particularly from IP addresses originating in China, the United States, and Germany. This suggests coordinated or automated probing attempts targeting multiple sites, including www.site1.org, api.site2.org, and login.site3.org.\n2. **Managed Challenges:** Several IP addresses were subjected to managed challenges, indicating suspicious behavior that required additional verification. These challenges were frequently applied to requests from China, the United States, and Singapore.\n3. **Allowed and Skipped Requests:** A few requests were allowed or skipped, indicating normal traffic or trusted sources. Notably, some allowed requests originated from China and the United States, suggesting legitimate access amidst the blocked attempts.\n\n**Infrastructure Status:**\n- **Firewall Performance:** The firewall is functioning effectively, blocking unauthorized access attempts and applying managed challenges where necessary. This indicates a robust security posture capable of handling current threat levels.\n- **Backend Monitoring:** Azure backend monitoring shows stable resource usage, with memory usage around 6145.65 MiB and CPU time at 76.53 seconds, suggesting no significant strain on system resources during this period.\n\n**Recommendations:**\n- Continue monitoring for patterns of repeated access attempts from specific regions to identify potential threats.\n- Review and update firewall rules and managed challenge criteria to ensure optimal protection against evolving threats.\n- Consider additional security measures, such as geofencing or rate limiting, to further mitigate the risk of automated attacks.",
+    "baseline_tokens": {
+      "prompt": 3415,
+      "completion": 389,
+      "total": 3804
+    },
+    "cybersum_report": "EXECUTIVE SUMMARY\n\nIn the last 24 hours, the security posture of our systems has experienced a significant increase in blocked events, primarily originating from the United States. The current system status is STATUS B, indicating a significant spike in blocked events. A total of 5,935 events were blocked, with the United States being the top source of these attacks. The infrastructure remains operational, but there is a noted warning in the DDoS status, suggesting elevated risk levels.\n\nTECHNICAL BRIEF\n\n- No services are currently in an abnormal state.\n- Server infrastructure health shows peak CPU load reaching up to 84.48% and average memory usage peaking at 7,870.56 MB.\n- Recent attack trends indicate a substantial increase in blocking actions, with the highest activity recorded on May 29, totaling 790 blocked events.\n- The DDoS status is marked as WARNING with a risk score of 35.0 and 28.0% of traffic identified as malicious.\n- The top targeted hosts include api.site2.org, www.site1.org, and login.site3.org, with the majority of attacks originating from the United States.",
+    "cybersum_tokens": {
+      "prompt": 4394,
+      "completion": 235,
+      "total": 4629
+    },
+    "cybersum_context_size": 6808,
+    "aggregated_context": {
+      "total_blocked_events": 11369,
+      "security_summary": {
+        "top_attacks": [
+          {
+            "h": "api.site2.org",
+            "cc": "United States",
+            "n": 1361
+          },
+          {
+            "h": "www.site1.org",
+            "cc": "United States",
+            "n": 1308
+          },
+          {
+            "h": "login.site3.org",
+            "cc": "United States",
+            "n": 1289
+          },
+          {
+            "h": "cdn.site4.org",
+            "cc": "United States",
+            "n": 1225
+          },
+          {
+            "h": "login.site3.org",
+            "cc": "China",
+            "n": 752
+          }
+        ],
+        "ddos_status": {
+          "h": "WARNING",
+          "rs": 35.0,
+          "mp": 28.0
+        }
+      },
+      "infrastructure_health": {
+        "abnormal_services": [],
+        "azure_peak": {
+          "peak_cpu_pct": 84.48,
+          "peak_mem_mib": 7870.56
+        }
+      }
+    }
+  },
+  {
+    "window_id": 4,
+    "scenario": "STATUS_C",
+    "baseline_report": "**Security Report Summary**\n\n**Overall Threat Assessment:**\nThe security logs indicate a moderate level of threat activity, primarily characterized by a high number of blocked and challenged requests. The majority of these actions are directed towards various subdomains, suggesting targeted attempts to access specific resources. The presence of multiple managed challenges and blocks indicates that the firewall is actively mitigating potential threats.\n\n**Notable Events:**\n1. **Frequent Blocks and Challenges:** There is a significant number of blocked requests originating from the United States, China, and Germany, targeting domains such as `www.site1.org`, `api.site2.org`, and `login.site3.org`. This suggests potential probing or unauthorized access attempts.\n2. **Managed Challenges:** Numerous managed challenges were issued, particularly towards traffic from China and the United States. This indicates that suspicious activity was detected, prompting additional verification steps.\n3. **Allowed and Skipped Requests:** A few requests were allowed or skipped, mainly from China and Russia, indicating that some traffic was deemed legitimate or low-risk after initial scrutiny.\n\n**Infrastructure Status:**\nThe backend infrastructure appears to be functioning within normal parameters, as indicated by the Azure backend monitor log showing memory usage at 7951.51 MiB and CPU usage at 84.77 seconds. This suggests that the system is handling the load effectively without any immediate signs of resource exhaustion or performance degradation.\n\nOverall, while the security measures in place are effectively identifying and mitigating threats, the persistent nature of the blocked and challenged requests suggests ongoing vigilance is necessary to protect against potential breaches. The infrastructure remains stable, supporting the current security operations effectively.",
+    "baseline_tokens": {
+      "prompt": 3445,
+      "completion": 323,
+      "total": 3768
+    },
+    "cybersum_report": "CYBERSECURITY DAILY BRIEFING\n\nEXECUTIVE SUMMARY\nThe overall security posture in the last 24 hours indicates a critical situation. The system status is currently STATUS C due to the \"Paused\" state of a key service and a critical infrastructure health status. A total of 6,023 blocked events were recorded, with the United States being the top source of these attacks. The infrastructure is experiencing significant challenges, necessitating immediate attention.\n\nTECHNICAL BRIEF\n- Abnormal Services:\n  - Main Web Portal (https://www.site1.org) is currently \"Paused\".\n- Server Infrastructure Health:\n  - Peak CPU load reached 92.84% at 17:00.\n  - Average memory usage peaked at 8,793.2 MB at 17:00.\n- Recent Attack Action Trends:\n  - A total of 1,483 blocks were recorded on May 29, indicating a significant spike in attack attempts.\n  - The majority of attacks originated from the United States, targeting multiple sites.\n- DDoS Status:\n  - The DDoS event is marked as critical with a risk score of 62.0 and 45% of traffic identified as malicious.",
+    "cybersum_tokens": {
+      "prompt": 4433,
+      "completion": 244,
+      "total": 4677
+    },
+    "cybersum_context_size": 6906,
+    "aggregated_context": {
+      "total_blocked_events": 11646,
+      "security_summary": {
+        "top_attacks": [
+          {
+            "h": "www.site1.org",
+            "cc": "United States",
+            "n": 1343
+          },
+          {
+            "h": "api.site2.org",
+            "cc": "United States",
+            "n": 1321
+          },
+          {
+            "h": "cdn.site4.org",
+            "cc": "United States",
+            "n": 1293
+          },
+          {
+            "h": "login.site3.org",
+            "cc": "United States",
+            "n": 1276
+          },
+          {
+            "h": "www.site1.org",
+            "cc": "China",
+            "n": 790
+          }
+        ],
+        "ddos_status": {
+          "h": "CRITICAL",
+          "rs": 62.0,
+          "mp": 45.0
+        }
+      },
+      "infrastructure_health": {
+        "abnormal_services": [
+          {
+            "sn": "Main Web Portal",
+            "su": "https://www.site1.org",
+            "st": "Paused"
+          }
+        ],
+        "azure_peak": {
+          "peak_cpu_pct": 92.84,
+          "peak_mem_mib": 8793.2
+        }
+      }
+    }
+  },
+  {
+    "window_id": 5,
+    "scenario": "STATUS_C",
+    "baseline_report": "**Security Report Summary**\n\n**Overall Threat Assessment:**\nThe security logs from May 29, 2026, indicate a medium to high level of threat activity targeting various web assets. The logs show a significant number of blocked and challenged requests, suggesting ongoing attempts to access or disrupt services. The majority of these threats originate from multiple countries, with a notable frequency from the United States, China, and Russia. The presence of managed challenges and blocks indicates that the security systems are actively mitigating potential threats.\n\n**Notable Events:**\n1. **Frequent Blocking and Challenges:** There is a high frequency of \"block\" and \"managed_challenge\" actions, particularly targeting \"www.site1.org\" and \"api.site2.org.\" This suggests targeted attempts to breach or overload these specific endpoints.\n2. **Geographical Distribution:** The threats are distributed across several countries, with the United States, China, and Russia being the most common sources. This indicates a widespread and possibly coordinated effort to probe or attack the infrastructure.\n3. **Specific Targeting of API and Login Endpoints:** The logs show repeated attempts to access \"api.site2.org\" and \"login.site3.org,\" which could suggest attempts to exploit vulnerabilities or gain unauthorized access to sensitive data.\n4. **Backend Resource Monitoring:** The Azure backend monitoring logs indicate stable resource usage with memory at 9436.08 MiB and CPU usage at 85.4 seconds, suggesting that the infrastructure is handling the load without significant performance degradation.\n\n**Infrastructure Status:**\nThe infrastructure appears to be stable and effectively managing the current threat landscape. The firewall is actively blocking and challenging suspicious activities, and the backend systems are operating within normal parameters. However, the persistent nature of the threats necessitates continued vigilance and possibly enhanced security measures to ensure ongoing protection against potential breaches.\n\n**Recommendations:**\n- Continue monitoring for any changes in threat patterns or increases in attack frequency.\n- Consider enhancing security protocols, particularly for API and login endpoints, to mitigate targeted attacks.\n- Review and update firewall rules and managed challenge settings to ensure optimal protection.\n- Conduct a security audit to identify and patch any potential vulnerabilities that could be exploited by attackers.",
+    "baseline_tokens": {
+      "prompt": 3439,
+      "completion": 436,
+      "total": 3875
+    },
+    "cybersum_report": "CYBERSECURITY DAILY BRIEFING\n\nEXECUTIVE SUMMARY\nIn the last 24 hours, the system has experienced a high level of security threats, resulting in a significant number of blocked events. The overall security posture is currently classified as STATUS C due to critical infrastructure issues and service disruptions. A total of 6,232 blocking events were recorded, with the United States being the top source of these attacks. The current situation requires immediate attention to restore normal operations and ensure system stability.\n\nCURRENT SYSTEM STATUS: STATUS C\n\nTECHNICAL BRIEF\n- Abnormal Services:\n  - Main Web Portal (https://www.site1.org) is currently Paused.\n  - Login Service (https://login.site3.org) is Down.\n- Server Infrastructure Health:\n  - Peak CPU Load reached 100.0% at 17:00.\n  - Average memory usage peaked at 10,044.39 MB at 17:00.\n- Recent Attack Action Trends:\n  - A significant spike in blocking actions was observed on 05-29, with 2,151 events.\n  - The majority of attacks originated from the United States, targeting various services.\n  - The DDoS event was marked as CRITICAL with a risk score of 80.0 and 61.0% malicious traffic.",
+    "cybersum_tokens": {
+      "prompt": 4469,
+      "completion": 267,
+      "total": 4736
+    },
+    "cybersum_context_size": 7018,
+    "aggregated_context": {
+      "total_blocked_events": 12072,
+      "security_summary": {
+        "top_attacks": [
+          {
+            "h": "www.site1.org",
+            "cc": "United States",
+            "n": 1494
+          },
+          {
+            "h": "api.site2.org",
+            "cc": "United States",
+            "n": 1315
+          },
+          {
+            "h": "login.site3.org",
+            "cc": "United States",
+            "n": 1312
+          },
+          {
+            "h": "cdn.site4.org",
+            "cc": "United States",
+            "n": 1237
+          },
+          {
+            "h": "www.site1.org",
+            "cc": "China",
+            "n": 874
+          }
+        ],
+        "ddos_status": {
+          "h": "CRITICAL",
+          "rs": 80.0,
+          "mp": 61.0
+        }
+      },
+      "infrastructure_health": {
+        "abnormal_services": [
+          {
+            "sn": "Main Web Portal",
+            "su": "https://www.site1.org",
+            "st": "Paused"
+          },
+          {
+            "sn": "Login Service",
+            "su": "https://login.site3.org",
+            "st": "Down"
+          }
+        ],
+        "azure_peak": {
+          "peak_cpu_pct": 100.0,
+          "peak_mem_mib": 10044.39
+        }
+      }
+    }
+  }
+]

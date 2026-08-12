@@ -1,0 +1,40 @@
+# Secrets — never commit
+.env
+.env.*
+!.env.example
+local.settings.json
+appsettings.json
+
+# Live evaluation runs (published/ is committed history; runs/ is not)
+evaluation/outputs/runs/
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+build/
+dist/
+
+# Tooling caches
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Azure Functions / Azurite
+bin/
+obj/
+.python_packages/
+__blobstorage__/
+__queuestorage__/
+__azurite_db*__.json
+.local-runtime/
+
+# Editors / OS
+.vscode/
+.idea/
+.DS_Store
+.staging/

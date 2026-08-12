@@ -1,0 +1,52 @@
+[
+  {
+    "window_id": 1,
+    "scenario": "STABLE",
+    "report": "CYBERSECURITY DAILY BRIEFING\n\nEXECUTIVE SUMMARY\n\nIn the last 24 hours, the system experienced a moderate level of security activity. The CURRENT SYSTEM STATUS is STATUS A, indicating a slight increase in security events with all services remaining active. A total of 24 blocked events were recorded. The top countries from which these blocked events originated include the United States, China, and Russia. Overall, the security posture remains robust with no critical incidents affecting service availability.\n\nTECHNICAL BRIEF\n\n- No services are currently in an abnormal state.\n- Server infrastructure health:\n  - Peak Memory Usage: 3909.88 MiB\n  - Peak CPU Usage: 36.45 seconds\n- Recent attack action trends:\n  - A total of 24 block actions were recorded.\n  - The highest number of blocks originated from the United States, followed by China and Russia.\n  - Managed challenges were frequently issued, particularly from IPs originating in the United States.\n- No critical infrastructure failures or high-intensity attacks were detected during this period.",
+    "tokens": {
+      "prompt": 3388,
+      "completion": 214,
+      "total": 3602
+    }
+  },
+  {
+    "window_id": 2,
+    "scenario": "STATUS_A",
+    "report": "CYBERSECURITY DAILY BRIEFING\n\nEXECUTIVE SUMMARY\n\nIn the last 24 hours, the system experienced a significant number of security events, primarily characterized by blocked access attempts. The overall security posture indicates a heightened level of activity, suggesting increased vigilance is necessary. \n\nCURRENT SYSTEM STATUS: STATUS B\n\nA total of 21 blocked events were recorded. The top countries from which these attempts originated include the United States, China, and Russia. This indicates a diverse range of sources for these security events, necessitating continued monitoring and analysis.\n\nTECHNICAL BRIEF\n\n- No services are currently in an abnormal state; all services are operational.\n- Server infrastructure health is stable, with peak memory usage recorded at 5654.2 MiB and peak CPU usage at 62.17 seconds.\n- Recent attack action trends show a significant number of blocked attempts, with managed challenges also being frequently triggered. The majority of these events targeted www.site1.org and login.site3.org, indicating these domains are primary targets.\n- Key metrics:\n  - Total blocked events: 21\n  - Top countries of origin: United States, China, Russia\n  - High memory usage: 5654.2 MiB\n  - High CPU usage: 62.17 seconds\n\nThe data suggests a need for ongoing vigilance and potentially increased security measures to mitigate the risk of unauthorized access attempts.",
+    "tokens": {
+      "prompt": 3616,
+      "completion": 281,
+      "total": 3897
+    }
+  },
+  {
+    "window_id": 3,
+    "scenario": "STATUS_B",
+    "report": "EXECUTIVE SUMMARY\n\nIn the past 24 hours, the security posture of our systems has been under moderate pressure due to a noticeable increase in blocked events. The CURRENT SYSTEM STATUS is STATUS A. A total of 30 blocking actions were recorded, indicating a slight increase in security events. The top countries from which these blocks originated are China, the United States, and Germany. Despite the uptick in security events, all services remain active, and there are no reports of paused services or critical infrastructure failures.\n\nTECHNICAL BRIEF\n\n- Services Status:\n  - No services are currently in an abnormal state or paused.\n\n- Server Infrastructure Health:\n  - Peak memory usage recorded at 6774.99 MiB.\n  - Peak CPU usage recorded at 76.53 total seconds.\n\n- Attack Action Trends:\n  - Total blocked events: 30\n  - Managed challenges issued: 12\n  - Top countries of origin for blocked events:\n    - China\n    - United States\n    - Germany\n  - Frequent targets include:\n    - www.site1.org\n    - api.site2.org\n    - login.site3.org\n  - Attack vectors primarily involve firewall blocks and managed challenges, with no critical infrastructure failures reported.",
+    "tokens": {
+      "prompt": 3684,
+      "completion": 251,
+      "total": 3935
+    }
+  },
+  {
+    "window_id": 4,
+    "scenario": "STATUS_C",
+    "report": "EXECUTIVE SUMMARY\n\nIn the last 24 hours, the system experienced a moderate level of security events. The overall security posture remains robust, with proactive measures effectively mitigating potential threats. \n\nCURRENT SYSTEM STATUS: STATUS A\n\nA total of 22 events were blocked, indicating a slight increase in security activities. The top countries from which these blocked events originated include the United States, China, and Germany. Despite this uptick, all services remain active, and no critical infrastructure issues have been reported.\n\nTECHNICAL BRIEF\n\n- No services are currently in an abnormal state. All services are active and operational.\n- Server infrastructure health:\n  - Peak Memory Usage: 7951.51 MiB\n  - Peak CPU Usage: 84.77 seconds\n- Recent attack action trends:\n  - A total of 22 block actions were recorded.\n  - Managed challenges were frequently deployed, particularly from IPs originating in China and the United States.\n  - The majority of blocked attempts targeted \"www.site1.org\" and \"api.site2.org\".\n  - The United States and China were the top sources of blocked traffic, followed by Germany.\n- No critical infrastructure failures or high-intensity attacks were detected, maintaining a stable operational environment.",
+    "tokens": {
+      "prompt": 3714,
+      "completion": 251,
+      "total": 3965
+    }
+  },
+  {
+    "window_id": 5,
+    "scenario": "STATUS_C",
+    "report": "EXECUTIVE SUMMARY\n\nIn the last 24 hours, the system experienced a significant number of security events, with a notable increase in blocked attempts from various countries. The CURRENT SYSTEM STATUS is STATUS B, indicating a significant spike in blocked events. A total of 25 blocking actions were recorded. The top countries from which these attempts originated include the United States, China, and Russia. Overall, the system remains operational, but vigilance is required due to the increased activity.\n\nTECHNICAL BRIEF\n\n- Services in Abnormal State: None reported as \"Paused.\"\n- Server Infrastructure Health:\n  - Peak Memory Usage: 9436.08 MiB\n  - Peak CPU Usage: 85.4 seconds\n- Recent Attack Action Trends:\n  - Total Blocked Events: 25\n  - Managed Challenges: 13\n  - Top Countries for Blocked Events:\n    - United States: 9\n    - China: 8\n    - Russia: 5\n  - Frequent Targeted Hosts:\n    - www.site1.org\n    - api.site2.org\n    - login.site3.org\n- The system experienced a significant number of managed challenges, indicating attempts to bypass security measures.\n- No critical infrastructure failures were detected, but the high number of blocks suggests increased probing or attack attempts.",
+    "tokens": {
+      "prompt": 3708,
+      "completion": 266,
+      "total": 3974
+    }
+  }
+]

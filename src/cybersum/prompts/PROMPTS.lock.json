@@ -1,0 +1,33 @@
+{
+  "eval_baseline_v1": {
+    "chars": 178,
+    "sha256": "eee18b71e710378d3785afdc74b8cf1164a6634b4d5f694993ab0d0ef5fe991c",
+    "source": "evaluation/run_experiment.py::BASELINE_SYSTEM_PROMPT",
+    "verbatim": true
+  },
+  "eval_cybersum_v1": {
+    "chars": 1379,
+    "sha256": "87e6f085975e4877705b2fb1ddb425e88d1fa0b805292dc053fd72791137ca4e",
+    "source": "evaluation/run_experiment.py::CYBERSUM_SYSTEM_PROMPT",
+    "verbatim": true
+  },
+  "geval_rubric_v3": {
+    "chars": 3786,
+    "sha256": "b1807a10f30c84c3351b0cd31684d3d039cc68b484dc38e74a7357a06071902a",
+    "source": "evaluation/run_geval.py::GEVAL_SYSTEM",
+    "verbatim": true
+  },
+  "production_report_v1": {
+    "chars": 2675,
+    "edits": [
+      {
+        "replaced": "host organisation name",
+        "with": "an international organization"
+      }
+    ],
+    "sha256": "d3631bddb6bef38bc28ea51621f3086b63cc31b88c2ec33b9a423c7e25efefc3",
+    "sha256_before_edits": "69409513316f80bf7b3db98dd91b6982753aeece31414d3e3749cb64fb86d636",
+    "source": "ai_service.py::system_prompt",
+    "verbatim": false
+  }
+}

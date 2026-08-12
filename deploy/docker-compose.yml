@@ -1,0 +1,23 @@
+# Demo/development stack. One service: a throwaway PostgreSQL seeded with the
+# schema at first start. The original deployment ran against managed Postgres in
+# a cloud tenant; nothing here reproduces that, and nothing here needs to.
+services:
+  postgres:
+    image: postgres:16
+    container_name: cybersum-db
+    environment:
+      POSTGRES_DB: ${DB_NAME:-cybersum}
+      POSTGRES_USER: ${DB_USER:-cybersum}
+      POSTGRES_PASSWORD: ${DB_PASS:-cybersum}
+    ports:
+      - "${DB_PORT:-5432}:5432"
+    volumes:
+      - ./sql:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-cybersum} -d ${DB_NAME:-cybersum}"]
+      interval: 2s
+      timeout: 3s
+      retries: 20
+    # Ephemeral by design: `make demo-down` takes the data with it.
+    tmpfs:
+      - /var/lib/postgresql/data

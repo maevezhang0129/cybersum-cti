@@ -1,0 +1,16 @@
+window_id,scenario,group,factual_accuracy,completeness,situational_awareness,avg_score
+1,STABLE,GroupA,2.67,3.67,4.0,3.45
+1,STABLE,GroupB,1.33,3.0,4.0,2.78
+1,STABLE,GroupC,4.0,5.0,5.0,4.67
+2,STATUS_A,GroupA,3.0,4.0,4.0,3.67
+2,STATUS_A,GroupB,1.0,2.67,4.0,2.56
+2,STATUS_A,GroupC,3.0,4.0,4.33,3.78
+3,STATUS_B,GroupA,3.0,4.0,4.0,3.67
+3,STATUS_B,GroupB,1.0,2.67,3.67,2.45
+3,STATUS_B,GroupC,3.0,4.0,4.0,3.67
+4,STATUS_C,GroupA,2.0,2.0,2.0,2.0
+4,STATUS_C,GroupB,1.0,2.0,1.0,1.33
+4,STATUS_C,GroupC,3.0,4.67,5.0,4.22
+5,STATUS_C,GroupA,2.0,2.0,1.67,1.89
+5,STATUS_C,GroupB,1.0,1.67,1.0,1.22
+5,STATUS_C,GroupC,2.67,4.67,5.0,4.11
