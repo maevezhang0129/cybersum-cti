@@ -10,6 +10,7 @@ import json
 import os
 import pathlib
 from collections.abc import Iterator
+from dataclasses import replace
 from datetime import UTC, datetime, timedelta
 from typing import Any
 
@@ -20,8 +21,15 @@ from cybersum.config import DatabaseSettings
 
 SCHEMA = pathlib.Path(__file__).resolve().parents[2] / "deploy" / "sql" / "001_schema.sql"
 
+#: These tests truncate tables between cases, so they run against a database of
+#: their own, created on demand on the same server. Sharing one with `make demo`
+#: meant a test run silently wiped the demo data -- and would have wiped anything
+#: else the DB_* variables happened to point at.
+TEST_DB_SUFFIX = "_pytest"
 
-def db_settings() -> DatabaseSettings:
+
+def server_settings() -> DatabaseSettings:
+    """The server the tests connect to, before choosing a database on it."""
     return DatabaseSettings.from_env(
         {
             "DB_HOST": os.environ.get("DB_HOST", "localhost"),
@@ -33,13 +41,40 @@ def db_settings() -> DatabaseSettings:
     )
 
 
+def db_settings() -> DatabaseSettings:
+    base = server_settings()
+    return replace(base, name=base.name + TEST_DB_SUFFIX)
+
+
 @pytest.fixture(scope="session")
 def raw_connection() -> Iterator[Any]:
+    admin_settings = server_settings()
+    test_name = db_settings().name
+
     try:
-        conn = psycopg2.connect(**db_settings().connect_kwargs())
+        admin = psycopg2.connect(**admin_settings.connect_kwargs())
     except psycopg2.OperationalError as exc:
         pytest.skip(f"No PostgreSQL available: {exc}")
+
+    # Never truncate a database this suite did not create.
+    admin.autocommit = True
+    with admin.cursor() as cur:
+        cur.execute("SELECT 1 FROM pg_database WHERE datname = %s;", (test_name,))
+        if cur.fetchone() is None:
+            cur.execute(f'CREATE DATABASE "{test_name}";')
+    admin.close()
+
+    conn = psycopg2.connect(**db_settings().connect_kwargs())
     conn.autocommit = True
+    with conn.cursor() as cur:
+        cur.execute(SCHEMA.read_text())
+
+    assert conn.get_dsn_parameters()["dbname"].endswith(TEST_DB_SUFFIX), (
+        "refusing to run destructive tests outside a *"
+        + TEST_DB_SUFFIX
+        + " database"
+    )
+
     yield conn
     conn.close()
 

@@ -22,6 +22,7 @@ from typing import Any
 
 from .aggregation import PRODUCTION, Scope, aggregate
 from .config import Settings
+from .grounding import GroundingReport, check_grounding
 from .llm_client import ChatClient
 from .notify import send_security_report
 from .report import ReportResult, generate_daily_report
@@ -57,6 +58,7 @@ class PipelineResult:
     top_5_origins: dict[str, Any] = field(default_factory=dict)
     extraction_failed: bool = False
     metadata: dict[str, Any] = field(default_factory=dict)
+    grounding: GroundingReport | None = None
     saved: bool = False
     emailed: bool = False
 
@@ -77,6 +79,8 @@ class PipelineResult:
         ]
         if self.extraction_failed:
             parts.append("status was DEFAULTED (data block unusable)")
+        if self.grounding is not None and not self.grounding.ok:
+            parts.append(f"{len(self.grounding.ungrounded)} UNGROUNDED figure(s)")
         if tokens := self.metadata.get("total_tokens"):
             parts.append(f"{tokens} tokens")
         return ", ".join(parts)
@@ -222,6 +226,14 @@ def run_daily_report(
         logger.exception("Run %s failed unexpectedly.", execution_id)
         return PipelineResult.failed("unexpected", repr(exc), execution_id, report_date)
 
+    # Every figure in the prose is traced back to the context it came from.
+    # This is a deterministic check, not a second opinion from a model: it
+    # catches the failure the evaluation surfaced, where a plausible,
+    # well-formed number was computed rather than read.
+    grounding = check_grounding(result.report, serialized)
+    if not grounding.ok:
+        logger.warning("Run %s: %s", execution_id, grounding.summary())
+
     # Mock runs produce a report to look at, and touch nothing else.
     saved = emailed = False
     if not settings.use_mock_data:
@@ -238,6 +250,7 @@ def run_daily_report(
         top_5_origins=result.top_5_origins,
         extraction_failed=result.extraction_failed,
         metadata=result.metadata,
+        grounding=grounding,
         saved=saved,
         emailed=emailed,
     )

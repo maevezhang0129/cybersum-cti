@@ -11,7 +11,13 @@ from typing import Any
 
 import pytest
 
-from cybersum.aggregation import Scope, aggregate, get_firewall_stats, get_total_blocked
+from cybersum.aggregation import (
+    Scope,
+    aggregate,
+    get_firewall_stats,
+    get_origin_countries,
+    get_total_blocked,
+)
 
 from .conftest import insert_firewall_row
 
@@ -122,3 +128,37 @@ def test_production_context_timestamps_are_datetimes_and_window_are_strings(db: 
     purpose rather than harmonising it."""
     assert not isinstance(aggregate(db, Scope.production())["report_generated_at"], str)
     assert isinstance(aggregate(db, Scope.window(4))["report_generated_at"], str)
+
+
+def test_country_totals_cover_every_row_not_just_the_top_five(db: Any) -> None:
+    """The second instance of the same failure. The model was summing the
+    country column of top_attacks and presenting it as a country total; with
+    eight host/country pairs, that sum is strictly smaller than the real one.
+    """
+    # Two countries, spread across enough hosts that neither fits in the top five.
+    for i in range(6):
+        for _ in range(i + 1):
+            insert_firewall_row(db, host=f"host{i}.example.org", country="United States")
+    for _ in range(3):
+        insert_firewall_row(db, host="host9.example.org", country="China")
+
+    with db.cursor() as cur:
+        countries = get_origin_countries(cur, Scope.production())
+        top5 = get_firewall_stats(cur, Scope.production())
+
+    from_top5 = sum(r["block_count"] for r in top5 if r["attacker_country"] == "United States")
+    assert countries["United States"] == 21
+    assert from_top5 < countries["United States"]
+
+
+def test_country_totals_sum_to_the_overall_total(db: Any) -> None:
+    """Unlike top_attacks, this breakdown is complete, so it must reconcile."""
+    for i in range(4):
+        insert_firewall_row(db, country=f"Country{i}")
+    insert_firewall_row(db, country="Country0", action="allow")  # not a block
+
+    with db.cursor() as cur:
+        countries = get_origin_countries(cur, Scope.production())
+        total = get_total_blocked(cur, Scope.production())
+
+    assert sum(countries.values()) == total

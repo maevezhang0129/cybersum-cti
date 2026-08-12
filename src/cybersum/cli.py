@@ -93,8 +93,18 @@ def cmd_daily_report(args: argparse.Namespace) -> int:
     if context is not None:
         print("\nGround truth from the aggregation the model was given:")
         print(_ground_truth_panel(context))
-        print("\nCompare the figures above against the briefing. Any number in the")
-        print("prose that is not derivable from this panel was not grounded in data.")
+
+    if result.grounding is not None:
+        grounding = result.grounding
+        print("\nGrounding check (deterministic, no model involved):")
+        if grounding.ok:
+            print(f"  all {grounding.checked} figures in the prose trace back to a field")
+            print(f"  in the context ({len(grounding.skipped)} small counts skipped)")
+        else:
+            print(f"  {len(grounding.ungrounded)} of {grounding.checked} figures "
+                  f"could not be traced:")
+            for figure in grounding.ungrounded:
+                print(f"    {figure.raw:>12s}  ...{figure.snippet}")
 
     print(f"\n{result.summary()}")
     return 0

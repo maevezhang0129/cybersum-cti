@@ -89,7 +89,13 @@ it. In the re-run, Group C reports the correct total in **5 of 5** windows and
 factual accuracy goes **3.13 → 5.00** — which is most of why B → C grew from
 +2.02 to +3.11.
 
-[docs/findings.md](docs/findings.md) has the reproduction, the fix, and a note on
+Then a deterministic check went in to catch the next one, and immediately did.
+It flagged `1,182` in a demo briefing — the sum of the three United States rows
+in the five-row breakdown, presented as a country total. Same failure, one level
+down. Fixed the same way, by supplying the aggregate the model was otherwise
+deriving.
+
+[docs/findings.md](docs/findings.md) has both, the reproduction, and a note on
 where this differs from the explanation given in the thesis.
 
 ---
@@ -126,8 +132,8 @@ Without a key the model call is replayed from a completion recorded from a live
 | | |
 |---|---|
 | `make demo` | database → seed → briefing |
-| `make test` | 167 tests, no database, no network |
-| `make test-all` | adds 18 integration tests against PostgreSQL |
+| `make test` | 198 tests, no database, no network |
+| `make test-all` | adds 20 integration tests against PostgreSQL |
 | `make check` | lint, types, tests, and a scan for internal identifiers |
 
 ---
@@ -142,9 +148,15 @@ and ten million produce the same-sized prompt.
 
 Two design choices carry most of the weight:
 
-- **The aggregate travels with its sample, labelled.** `total_blocked_events`
-  comes first, and `top_attacks` is annotated as a five-row subset that does not
-  sum to it. This is the direct answer to the failure above.
+- **The aggregate travels with its sample, labelled.** `total_blocked_events` and
+  `blocked_by_country` come first, and `top_attacks` is annotated as a five-row
+  subset that sums to neither. Wherever a breakdown is available and its
+  aggregate is not, the model computes the aggregate and states it as fact.
+- **Every figure is traced back before delivery.** A deterministic check pulls
+  each number out of the prose and confirms it appears in the context, catching
+  the class of error above rather than one instance of it. It reports rather than
+  blocks, and it is honest about what it cannot see —
+  [docs/grounding.md](docs/grounding.md).
 - **Empty is a failure, not an all-clear.** If every signal returns nothing, the
   run stops. That state is indistinguishable from a quiet day, and the previous
   version would have published a reassuring briefing on the morning ingestion
@@ -219,16 +231,17 @@ states the current reading and says so explicitly. See
 
 Next, in order:
 
-1. **A numeric grounding check.** Every figure in the prose should be traceable
-   to a field in the context, deterministically, before delivery. The finding
-   above becomes a product feature. Group C is at 5.00 on factual accuracy with
-   nothing enforcing it — that is a property of this model on this data, not a
-   guarantee.
-2. **Evaluation as a gate.** `make eval` in CI over a fixed fixture, failing when
+1. **Make the grounding check a gate.** It reports today. Blocking delivery on an
+   unexplained figure needs a false-positive rate measured over more than fifteen
+   briefings first.
+2. **Field-level attribution.** The check matches values; it cannot tell that a
+   figure lifted from the trend data has been described as a 24-hour total. That
+   needs each figure tied to the field it came from.
+3. **Evaluation as a gate.** `make eval` in CI over a fixed fixture, failing when
    the score drops.
-3. **Model comparison.** The provider seam is already there; running the same
+4. **Model comparison.** The provider seam is already there; running the same
    evaluation across models is a small step and a useful result.
-4. **Human validation of the judge.** The thesis planned a blind human panel and
+5. **Human validation of the judge.** The thesis planned a blind human panel and
    used G-Eval instead. Closing that gap is what would make the scores mean
    something outside this repository.
 

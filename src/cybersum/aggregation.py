@@ -122,6 +122,28 @@ def total_blocked_sql(scope: Scope) -> str:
           AND raw_data ->> 'action' = 'block'{where};"""
 
 
+def origin_countries_sql(scope: Scope) -> str:
+    """Blocked events per country, over all rows rather than the top five.
+
+    Added for the same reason as total_blocked_events, after the grounding check
+    caught the model summing the country column of the top-five breakdown and
+    presenting the result as a country total. That sum is arithmetically correct
+    and materially wrong: the breakdown is five host/country pairs, so a country
+    appearing outside them contributes nothing.
+    """
+    where = scope._time_predicate(scope.lookback) + scope._window_predicate()
+    return f"""SELECT
+            COALESCE(raw_data ->> 'clientCountryName', 'Unknown') AS attacker_country,
+            COUNT(*) AS block_count
+        FROM logs
+        WHERE provider = 'cloudflare'
+          AND service = 'firewall'
+          AND raw_data ->> 'action' = 'block'{where}
+        GROUP BY attacker_country
+        ORDER BY block_count DESC
+        LIMIT 5;"""
+
+
 def uptime_sql(scope: Scope) -> str:
     return f"""WITH latest_scan AS (
             SELECT raw_data
@@ -304,6 +326,11 @@ def get_total_blocked(cur: Any, scope: Scope = PRODUCTION) -> int:
     return int(rows[0]["total_blocked_events"]) if rows else 0
 
 
+def get_origin_countries(cur: Any, scope: Scope = PRODUCTION) -> dict[str, int]:
+    rows = _run(cur, "origin_countries", origin_countries_sql(scope), scope.params)
+    return {r["attacker_country"]: int(r["block_count"]) for r in rows}
+
+
 def get_uptime_stats(cur: Any, scope: Scope = PRODUCTION) -> list[dict[str, Any]]:
     return _run(cur, "uptime", uptime_sql(scope), scope.params)
 
@@ -341,9 +368,16 @@ def aggregate(
                 # below is a five-row sample, and models will happily sum it and
                 # present the result as the total unless given the real one.
                 "total_blocked_events": get_total_blocked(cur, scope),
+                # Per-country totals over every row. Without these the model has
+                # to derive a country figure by summing the column of
+                # top_attacks, which counts only that country's appearances
+                # among five host/country pairs.
+                "blocked_by_country": get_origin_countries(cur, scope),
                 "top_attacks_note": "top_attacks is the 5 busiest host/country "
                                     "pairs only, not the full breakdown; it does "
-                                    "not sum to total_blocked_events",
+                                    "not sum to total_blocked_events, and its "
+                                    "country column does not sum to "
+                                    "blocked_by_country",
                 "top_attacks": get_firewall_stats(cur, scope),
                 "ddos_status": get_ddos_status(cur, scope),
             },

@@ -155,6 +155,45 @@ And nothing *enforces* the correct total — Group C scoring 5.00 is a property 
 this model on this data, not a guarantee. That is why a deterministic numeric
 grounding check is the first item on the roadmap rather than a nice-to-have.
 
+## The check found a second instance
+
+With the total fixed, the deterministic check went into the pipeline and
+immediately flagged a figure in the demo briefing: **1,182**, presented as
+"traffic originated: United States: 1,182".
+
+It is not in the context. It is the sum of the three United States rows in
+`top_attacks`:
+
+| host | country | blocked |
+|---|---|---|
+| www.site1.org | United States | 414 |
+| api.site2.org | United States | 309 |
+| login.site3.org | United States | 248 |
+| www.site1.org | China | 215 |
+| cdn.site4.org | United States | 211 |
+
+414 + 309 + 248 + 211 = 1,182.
+
+The same failure, one level down. The arithmetic is correct; the claim is not.
+`top_attacks` is the five busiest *host/country pairs*, so a country's traffic
+against any host outside those five contributes nothing — "United States: 1,182"
+reads as a country total and is a floor.
+
+The fix is the same shape: give the model the aggregate it would otherwise have
+to derive. `blocked_by_country` is a `GROUP BY country` over every row, sitting
+beside the total, with the note extended to say the country column of
+`top_attacks` does not sum to it either.
+
+Afterwards the same briefing traces **12 of 12** figures, up from 7 of 8 — and
+cites *more* numbers than before, because it now has a country breakdown worth
+citing rather than one it had to invent.
+
+Two things worth taking from this. The pattern generalises: **wherever a
+breakdown is available and its aggregate is not, the model will compute the
+aggregate and state it as fact.** And a deterministic check earns its place by
+finding new instances, not only by guarding known ones — this one was found in a
+demo run, not in an experiment designed to look for it.
+
 ## What it suggests more generally
 
 - **Adjacency is instruction.** Putting a breakdown next to a request for a total
@@ -169,3 +208,7 @@ grounding check is the first item on the roadmap rather than a nice-to-have.
 - **The evaluation earned its keep by finding a bug.** Not by producing a score.
   An LLM evaluation harness that only produces scores is a report; one that
   surfaces a reproducible defect is a test suite.
+- **Fixing an instance is not fixing the class.** The total was one place where a
+  breakdown sat next to a missing aggregate. The country figure was another, and
+  it was found within minutes of the check going live. Auditing the context for
+  that shape is cheaper than waiting for each one to surface.
