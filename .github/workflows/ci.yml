@@ -71,10 +71,16 @@ jobs:
         with:
           fetch-depth: 0
 
+      # Invoked directly rather than through gitleaks-action, which scans the
+      # push's commit range. On a repository whose first commit is the root, that
+      # range is `<root>^..HEAD` -- an invalid revision. The action then reports
+      # "no leaks found" having scanned zero bytes, which is worse than failing.
+      # This scans the entire history, every time, which is the actual claim:
+      # no credential has ever been committed here.
       - name: gitleaks
-        uses: gitleaks/gitleaks-action@v2
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          docker run --rm -v "$PWD:/repo" zricethezav/gitleaks:latest \
+            detect --source=/repo --redact --verbose --no-banner
 
       - uses: actions/setup-python@v5
         with:
