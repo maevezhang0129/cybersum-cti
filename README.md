@@ -244,7 +244,9 @@ This began as a master's thesis at Stockholm University, Department of Computer
 and Systems Sciences. The thesis covers the design rationale, the literature the
 approach draws on, and the full evaluation.
 
-> **Thesis:** *(add the DiVA link once the record is public)*
+> Master's thesis, Department of Computer and Systems Sciences, Stockholm
+> University, 2026. Defended. The DiVA record is pending publication; the
+> citation and link will be added here once it is available.
 
 Where this repository and the thesis disagree — the cause of the accuracy
 ceiling, and the reproducibility of the published numbers — the repository
