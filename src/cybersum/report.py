@@ -95,7 +95,7 @@ def generate_daily_report(
                 temperature=settings.temperature,
             )
             return _build_result(response, prompt, settings, attempt)
-        except Exception as exc:
+        except Exception as exc:  # noqa: BLE001 - classified by should_retry
             last_error = exc
             if not should_retry(exc, attempt, settings.max_retries):
                 logger.error("Model call failed permanently: %s", exc)

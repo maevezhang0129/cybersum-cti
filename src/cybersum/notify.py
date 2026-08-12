@@ -175,7 +175,7 @@ def send_security_report(
             logger.warning("SMTP transport failure (attempt %d/%d): %s", attempt, MAX_RETRIES, exc)
         except smtplib.SMTPException as exc:
             logger.warning("SMTP error (attempt %d/%d): %s", attempt, MAX_RETRIES, exc)
-        except Exception as exc:
+        except Exception as exc:  # noqa: BLE001 - delivery must never raise
             logger.warning("Unexpected send failure (attempt %d/%d): %s", attempt, MAX_RETRIES, exc)
         else:
             logger.info(

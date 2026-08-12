@@ -290,7 +290,7 @@ def _run(cur: Any, name: str, sql: str, params: Sequence[Any]) -> list[dict[str,
         if not rows:
             logger.warning("Aggregation signal %r returned no rows.", name)
         return rows
-    except Exception as exc:
+    except Exception as exc:  # noqa: BLE001 - one bad signal must not kill the run
         logger.error("Aggregation signal %r failed: %s", name, exc)
         return []
 

@@ -1,0 +1,6 @@
+# Azure Functions resolves dependencies from this file, not from pyproject.toml.
+# Keep in step with the [project] dependencies there.
+azure-functions
+openai>=1.42
+psycopg2-binary>=2.9.9
+python-dotenv>=1.0.1
