@@ -106,27 +106,49 @@ have to.
 4.47. That gap is one specific, reproducible error, and it has its own writeup:
 [findings.md](findings.md).
 
-## The re-run
+## The re-runs
 
-`evaluation/outputs/runs/2026-08-12/` is the same experiment on the current code,
-with the grounding fix in place and data regenerated from a different seed:
+Two further runs on the current code, data regenerated from a fresh seed each
+time, judged in separate sessions:
 
-| | Thesis run | Re-run |
+| | Thesis | Re-run 1 | Re-run 2 |
+|---|---|---|---|
+| Group A | 2.94 | 2.67 | 3.07 |
+| Group B | 2.07 | 1.80 | 1.69 |
+| Group C | 4.09 | 4.91 | **4.93** |
+| A → B | −0.87 | −0.87 | −1.38 |
+| B → C | +2.02 | +3.11 | **+3.25** |
+| A → C | +1.15 | +2.25 | +1.87 |
+
+Group C's factual accuracy went 3.13 → 5.00 and stayed there: 5.00 in every
+window of both re-runs. That is the grounding work, and it accounts for most of
+the growth in B → C.
+
+**On reading these numbers.** The direction is stable across three runs; the
+magnitudes are not. A → B is negative every time and ranges from −0.87 to −1.38.
+Group A's mean moved 2.94 → 2.67 → 3.07 with nothing about Group A changing. A
+five-window experiment judged by a model at temperature 0.3 carries that much
+variance, so an arrow's sign and rough size are supportable and its second
+decimal is not.
+
+## Grounding
+
+Alongside the judge, a deterministic check traces every figure in each briefing
+back to the context it was given ([grounding.md](grounding.md)):
+
+| | Grounded | Figures cited per report |
 |---|---|---|
-| Group A | 2.94 | 2.67 |
-| Group B | 2.07 | 1.80 |
-| Group C | 4.09 | **4.91** |
-| A → B | −0.87 | **−0.87** |
-| B → C | +2.02 | **+3.11** |
-| A → C | +1.15 | **+2.25** |
+| A baseline | 20/27 — 74% | 5.4 |
+| B control | 15/23 — 65% | 4.6 |
+| **C Cybersum** | **36/36 — 100%** | **7.2** |
 
-Group C's factual accuracy went 3.13 → 5.00, which accounts for most of the
-change. Groups A and B each fell 0.27, so the prompt effect is unchanged at
-−0.87 — an effect measured twice, on different data, by different judging
-sessions.
+This measures something the judge does not, and it disagrees usefully. The check
+rewards vagueness — a briefing citing nothing scores 100% — so the pairing is
+what carries the result: Group C is the only arm that is fully traceable, and it
+is also the arm that commits to the most numbers.
 
 `python -m evaluation.cli compare evaluation/outputs/published evaluation/outputs/runs/2026-08-12`
-prints them window by window.
+prints the score tables window by window.
 
 ## Limitations
 
@@ -134,9 +156,10 @@ prints them window by window.
   was run to check the judge tracks human judgement. The thesis planned a blind
   panel of 3–5 evaluators and used G-Eval instead; closing that gap is what would
   make these numbers portable.
-- **Five windows.** Enough to separate a 2.02-point effect from noise. Not enough
-  for a confidence interval worth quoting, and the per-window spread (0.00 to
-  +2.22) is wide.
+- **Five windows, and visible run-to-run variance.** Enough to separate a
+  3-point effect from noise. Not enough for a confidence interval worth quoting:
+  across three runs Group A's mean moved by 0.4 with nothing about Group A
+  changing, and A → B ranged from −0.87 to −1.38.
 - **Synthetic data.** Fabricated windows modelled on published traffic
   characteristics, not a real attack corpus with real ambiguity.
 - **The side channel was never tested.** The evaluation prompt omits the

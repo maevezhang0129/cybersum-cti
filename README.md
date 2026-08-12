@@ -24,24 +24,25 @@ A three-group experiment over five synthetic scenario windows, scored blind by
 GPT-4o on factual accuracy, completeness and situational awareness (1–5, mean of
 three judging runs):
 
-| Group | Input | Prompt | Thesis run | Current |
+| Group | Input | Prompt | Thesis | Current |
 |---|---|---|---|---|
-| **A** baseline | 50 raw log rows | short generic prompt | 2.94 | **2.67** |
-| **B** control | 50 raw log rows | full structured prompt | 2.07 | **1.80** |
-| **C** Cybersum | aggregated context | full structured prompt | 4.09 | **4.91** |
+| **A** baseline | 50 raw log rows | short generic prompt | 2.94 | 3.07 |
+| **B** control | 50 raw log rows | full structured prompt | 2.07 | **1.69** |
+| **C** Cybersum | aggregated context | full structured prompt | 4.09 | **4.93** |
 
 Reading the arrows rather than the rows:
 
-| Comparison | Variable isolated | Thesis run | Current |
-|---|---|---|---|
-| A → B | prompt only, data held constant | −0.87 | **−0.87** |
-| B → C | data only, prompt held constant | +2.02 | **+3.11** |
-| A → C | combined | +1.15 | **+2.25** |
+| Comparison | Variable isolated | Thesis | Re-run 1 | Re-run 2 |
+|---|---|---|---|---|
+| A → B | prompt only, data held constant | −0.87 | −0.87 | **−1.38** |
+| B → C | data only, prompt held constant | +2.02 | +3.11 | **+3.25** |
+| A → C | combined | +1.15 | +2.25 | **+1.87** |
 
-Two runs a few months apart, on independently regenerated data, judged
-independently. Absolute levels moved — every group scored a little lower — but
-**the prompt effect is −0.87 in both**, because A and B moved together. B → C
-grew because Group C got better: see below.
+Three runs over independently regenerated data, judged in three separate
+sessions. Read the direction, not the decimals: the prompt effect is negative
+every time and lands between −0.87 and −1.38; absolute group means drift by up
+to 0.4 between runs with nothing relevant changed. B → C grew across runs
+because Group C got better — see below.
 
 **The structured prompt made things worse when applied to raw logs.** Asking a
 model for a precise status classification and a specific set of metrics, over a
@@ -50,7 +51,7 @@ things it cannot see. The same prompt over the aggregated context is the best
 performer by a wide margin.
 
 The gap widens exactly where it matters. In the two most severe windows — a
-paused service and a critical DDoS score — the baseline scored 2.00 and 2.00
+paused service and a critical DDoS score — the baseline scored 2.00 and 1.78
 while Cybersum scored 5.00 and 5.00. A random sample of fifty rows tends to miss
 low-frequency critical signals, and a briefing that reports a crisis as a quiet
 day is worse than no briefing.
@@ -94,6 +95,18 @@ It flagged `1,182` in a demo briefing — the sum of the three United States row
 in the five-row breakdown, presented as a country total. Same failure, one level
 down. Fixed the same way, by supplying the aggregate the model was otherwise
 deriving.
+
+Where that leaves the current run:
+
+| | Grounded figures | Cited per report |
+|---|---|---|
+| A baseline | 20/27 — 74% | 5.4 |
+| B control | 15/23 — 65% | 4.6 |
+| **C Cybersum** | **36/36 — 100%** | **7.2** |
+
+Group C is both the most specific and the only one fully traceable. That matters
+because the check rewards vagueness: a briefing that cites nothing scores 100%.
+Cybersum scores 100% while citing the most.
 
 [docs/findings.md](docs/findings.md) has both, the reproduction, and a note on
 where this differs from the explanation given in the thesis.

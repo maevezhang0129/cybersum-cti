@@ -131,29 +131,29 @@ correct total in **five windows out of five**:
 
 And the dimension that was stuck moved:
 
-| | Thesis run | Re-run |
-|---|---|---|
-| Group C factual accuracy | 3.13 | **5.00** |
-| Group C overall | 4.09 | **4.91** |
-| B → C effect | +2.02 | **+3.11** |
+| | Thesis run | Re-run 1 | Re-run 2 |
+|---|---|---|---|
+| Group C factual accuracy | 3.13 | **5.00** | **5.00** |
+| Group C overall | 4.09 | 4.91 | **4.93** |
+| B → C effect | +2.02 | +3.11 | **+3.25** |
 
-The ceiling was this error and nothing else. With it gone, Group C scores 5.00 on
-factual accuracy in every window.
+The ceiling was this error and nothing else. With it gone, Group C scores 5.00
+on factual accuracy in every window of both re-runs.
 
-### What the re-run also says about the rest
+### What the re-runs also say about the rest
 
-Absolute levels drifted between runs — Groups A and B each fell 0.27 — which is
-what a different data seed and a different judging session look like. The
-**prompt effect did not**: A → B is −0.87 in both runs, because A and B moved
-together. An effect that survives regenerated data and independent judging is
-more believable than one measured once.
+The prompt effect holds its sign across all three runs and not its size: A → B
+is −0.87, −0.87 and −1.38. Group A's own mean moved 2.94 → 2.67 → 3.07 with
+nothing about Group A changing. Five windows judged by a model at temperature
+0.3 carry that much variance, so the arrow's direction is supportable and its
+second decimal is not.
 
 Two caveats worth keeping. Five perfect scores invite suspicion, so the judge's
 rationales were read rather than assumed: they name the paused service, the DDoS
 status and the blocked total specifically, rather than offering generic praise.
-And nothing *enforces* the correct total — Group C scoring 5.00 is a property of
-this model on this data, not a guarantee. That is why a deterministic numeric
-grounding check is the first item on the roadmap rather than a nice-to-have.
+And nothing in the system *enforced* the correct total — 5.00 was a property of
+this model on this data. That is what the deterministic check is for, and it is
+why the very next thing that happened was it finding another instance.
 
 ## The check found a second instance
 

@@ -17,17 +17,34 @@ is the code in the repository, and the generator is seeded.
 
 | | Thesis | Here |
 |---|---|---|
-| Group A | 2.94 | 2.67 |
-| Group B | 2.07 | 1.80 |
-| Group C | 4.09 | **4.91** |
-| A → B | −0.87 | **−0.87** |
-| B → C | +2.02 | **+3.11** |
+| Group A | 2.94 | 3.07 |
+| Group B | 2.07 | **1.69** |
+| Group C | 4.09 | **4.93** |
+| A → B | −0.87 | **−1.38** |
+| B → C | +2.02 | **+3.25** |
+| A → C | +1.15 | **+1.87** |
 
-Group C's factual accuracy went from 3.13 to 5.00 after the grounding fix
-described in `docs/findings.md`; it now reports the correct blocked total in all
-five windows. Groups A and B each fell 0.27, which is what a different data seed
-and a different judging session look like — so compare the arrows, not the
-levels.
+Group C scores 5.00 on factual accuracy in every window, after the two grounding
+fixes described in `docs/findings.md`: it reports the correct blocked total and
+the correct per-country totals rather than deriving either from the five-row
+breakdown.
+
+Group means drift between runs — Group A has been 2.94, 2.67 and 3.07 across
+three runs with nothing about Group A changing. Compare the arrows, not the
+levels, and treat the second decimal as noise.
+
+Grounding, from the deterministic check rather than the judge:
+
+| | Grounded | Cited per report |
+|---|---|---|
+| A | 20/27 — 74% | 5.4 |
+| B | 15/23 — 65% | 4.6 |
+| C | **36/36 — 100%** | **7.2** |
+
+The grounding records in `all_reports.json` were backfilled after the run, using
+the harness's own `_grounding_record` over the reports and contexts already in
+the file. The check is deterministic over those two inputs, so the values are
+what the harness would have written had it recorded them at the time.
 
 Only `avg_score` is the mean of the three dimensions; the dimensions themselves
 are means of three judging passes.
