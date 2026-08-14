@@ -10,17 +10,18 @@ of raw rows. This repository is the system, plus the experiment that measured
 whether that actually helps.
 
 ```mermaid
-flowchart LR
+flowchart TB
   FW["edge firewall"] --> DB
   UP["uptime monitor"] --> DB
   AZ["infra metrics"] --> DB
-  DB[("logs — JSONB<br/>schema-on-read")] --> AGG
-  AGG["aggregation.py<br/>7 SQL signals + Scope<br/>fixed size, any log volume"] --> LLM
-  LLM["report.py<br/>ONE model call<br/>exec summary + technical brief"] --> GR
-  GR["grounding.py<br/>every figure traced back<br/>to the field it came from"] --> ST
-  GR --> MAIL["notify.py<br/>HTML email"]
-  ST[("daily_security_reports")] --> API["get_latest_report<br/>authenticated HTTP"]
-  API --> BI["Power BI report<br/>make dashboard"]
+  DB[("logs — JSONB, schema-on-read")] --> AGG
+  AGG["aggregation.py — 7 SQL signals + Scope<br/>fixed size, whatever the log volume"] --> LLM
+  LLM["report.py — ONE model call<br/>executive summary + technical brief"] --> GR
+  GR["grounding.py — every figure traced back to the field it came from"]
+  GR --> ST[("daily_security_reports")]
+  GR --> MAIL["notify.py — HTML email"]
+  ST --> API["get_latest_report — authenticated HTTP"]
+  API --> BI["Power BI report · make dashboard"]
 
   style AGG fill:#e8f0fe,stroke:#0056b3
   style GR fill:#e8f0fe,stroke:#0056b3
