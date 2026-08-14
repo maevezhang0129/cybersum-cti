@@ -10,22 +10,24 @@ of raw rows. This repository is the system, plus the experiment that measured
 whether that actually helps.
 
 ```mermaid
-flowchart TB
+flowchart LR
   FW["edge firewall"] --> DB
   UP["uptime monitor"] --> DB
   AZ["infra metrics"] --> DB
-  DB[("logs — JSONB, schema-on-read")] --> AGG
-  AGG["aggregation.py — 7 SQL signals + Scope<br/>fixed size, whatever the log volume"] --> LLM
-  LLM["report.py — ONE model call<br/>executive summary + technical brief"] --> GR
-  GR["grounding.py — every figure traced back to the field it came from"]
-  GR --> ST[("daily_security_reports")]
-  GR --> MAIL["notify.py — HTML email"]
-  ST --> API["get_latest_report — authenticated HTTP"]
-  API --> BI["Power BI report · make dashboard"]
+  DB[("logs<br/>JSONB")] --> AGG
+  AGG["aggregation.py<br/>7 SQL signals"] --> LLM
+  LLM["report.py<br/>ONE model call"] --> GR
+  GR["grounding.py<br/>figures traced"] --> ST
+  GR --> MAIL["notify.py<br/>email"]
+  ST[("daily_security<br/>_reports")] --> BI["get_latest_report<br/>Power BI"]
 
   style AGG fill:#e8f0fe,stroke:#0056b3
   style GR fill:#e8f0fe,stroke:#0056b3
 ```
+
+Context size is a function of the signal set, not of traffic: ten thousand log
+rows and ten million produce the same-sized prompt. Every figure in the prose is
+traced back to the field it came from before anything is delivered.
 
 ---
 
