@@ -4,17 +4,70 @@ Turns raw security telemetry into a daily briefing written for two audiences at
 once — an executive summary and a technical brief, from a single model call.
 
 The interesting part is not the generation. It is what sits in front of it:
-five deterministic SQL aggregations that reduce an unbounded log table to a
-fixed set of facts, so the model summarises a small structured context instead
-of a sample of raw rows. This repository is the system, plus the experiment that
-measured whether that actually helps.
+deterministic SQL aggregations that reduce an unbounded log table to a fixed set
+of facts, so the model summarises a small structured context instead of a sample
+of raw rows. This repository is the system, plus the experiment that measured
+whether that actually helps.
+
+```mermaid
+flowchart LR
+  FW["edge firewall"] --> DB
+  UP["uptime monitor"] --> DB
+  AZ["infra metrics"] --> DB
+  DB[("logs — JSONB<br/>schema-on-read")] --> AGG
+  AGG["aggregation.py<br/>7 SQL signals + Scope<br/>fixed size, any log volume"] --> LLM
+  LLM["report.py<br/>ONE model call<br/>exec summary + technical brief"] --> GR
+  GR["grounding.py<br/>every figure traced back<br/>to the field it came from"] --> ST
+  GR --> MAIL["notify.py<br/>HTML email"]
+  ST[("daily_security_reports")] --> API["get_latest_report<br/>authenticated HTTP"]
+  API --> BI["Power BI report<br/>make dashboard"]
+
+  style AGG fill:#e8f0fe,stroke:#0056b3
+  style GR fill:#e8f0fe,stroke:#0056b3
+```
+
+---
+
+## Run it
+
+Needs Docker and Python 3.11+. No API key, no configuration.
+
+```bash
+git clone https://github.com/maevezhang0129/cybersum-cti && cd cybersum-cti
+python -m venv .venv && .venv/bin/pip install -e ".[dev]"
+make demo
+```
+
+About four seconds: starts PostgreSQL, seeds one scenario window (a paused
+service and a critical DDoS score), aggregates, generates, and prints the
+briefing next to the facts it was given —
 
 ```
- telemetry ──► logs (JSONB) ──► 5 SQL signals ──► one model call ──► briefing
-  firewall      schema-on-read   fixed size,      dual audience,     + status code
-  uptime                         independent of   grounded in the    + top origins
-  metrics                        log volume       aggregate          → DB, email, dashboard
+Ground truth from the aggregation the model was given:
+  total blocked events   2,592
+  top origin             United States (414 against www.site1.org)
+  DDoS health            CRITICAL (risk 62.0, 45.0% malicious)
+  services not up        1
+      - Main Web Portal: Paused
+
+Grounding check (deterministic, no model involved):
+  all 12 figures in the prose trace back to a field
+  in the context (3 small counts skipped)
 ```
+
+so you can check the prose against the data rather than take its word for it.
+
+Without a key the model call is replayed from a completion recorded from a live
+`gpt-4o` call, so the whole parse–format–extract path is real. Export
+`OPENAI_API_KEY` and the same command makes a fresh call.
+
+| | |
+|---|---|
+| `make demo` | database → seed → briefing |
+| `make dashboard` | serve that briefing the way the dashboard read it |
+| `make test` | 230 tests, no database, no network |
+| `make test-all` | adds 20 integration tests against PostgreSQL |
+| `make check` | lint, types, tests, and a scan for internal identifiers |
 
 ---
 
@@ -91,10 +144,9 @@ factual accuracy goes **3.13 → 5.00** — which is most of why B → C grew fr
 +2.02 to +3.11.
 
 Then a deterministic check went in to catch the next one, and immediately did.
-It flagged `1,182` in a demo briefing — the sum of the three United States rows
-in the five-row breakdown, presented as a country total. Same failure, one level
-down. Fixed the same way, by supplying the aggregate the model was otherwise
-deriving.
+It flagged `1,182` in a demo briefing — the sum of the United States rows in the
+five-row breakdown, presented as a country total. Same failure, one level down.
+Fixed the same way, by supplying the aggregate the model was otherwise deriving.
 
 Where that leaves the current run:
 
@@ -113,53 +165,16 @@ where this differs from the explanation given in the thesis.
 
 ---
 
-## Run it
-
-Needs Docker and Python 3.11+. No API key, no configuration.
-
-```bash
-git clone https://github.com/maevezhang0129/cybersum && cd cybersum
-python -m venv .venv && .venv/bin/pip install -e ".[dev]"
-make demo
-```
-
-About four seconds: starts PostgreSQL, seeds one scenario window (a paused
-service and a critical DDoS score), aggregates, generates, and prints the
-briefing next to the facts it was given —
-
-```
-Ground truth from the aggregation the model was given:
-  total blocked events   2,592
-  top origin             United States (414 against www.site1.org)
-  DDoS health            CRITICAL (risk 62.0, 45.0% malicious)
-  services not up        1
-      - Main Web Portal: Paused
-```
-
-so you can check the prose against the data rather than take its word for it.
-
-Without a key the model call is replayed from a completion recorded from a live
-`gpt-4o` call, so the whole parse–format–extract path is real. Export
-`OPENAI_API_KEY` and the same command makes a fresh call.
-
-| | |
-|---|---|
-| `make demo` | database → seed → briefing |
-| `make test` | 198 tests, no database, no network |
-| `make test-all` | adds 20 integration tests against PostgreSQL |
-| `make check` | lint, types, tests, and a scan for internal identifiers |
-
----
-
 ## How the grounding works
 
-Five queries, in [`src/cybersum/aggregation.py`](src/cybersum/aggregation.py):
-top attacker origins, total blocked volume, service availability, infrastructure
-load, and a 90-day trend. Everything the model ever sees is their output, so
-context size is a function of the signal set, not of traffic. Ten thousand rows
-and ten million produce the same-sized prompt.
+Seven queries, in [`src/cybersum/aggregation.py`](src/cybersum/aggregation.py):
+total blocked volume, blocked traffic by origin country, the top attacker
+host/country pairs, service availability, infrastructure load, DDoS health, and a
+90-day trend. Everything the model ever sees is their output, so context size is
+a function of the signal set, not of traffic. Ten thousand rows and ten million
+produce the same-sized prompt.
 
-Two design choices carry most of the weight:
+Three design choices carry most of the weight:
 
 - **The aggregate travels with its sample, labelled.** `total_blocked_events` and
   `blocked_by_country` come first, and `top_attacks` is annotated as a five-row
@@ -213,6 +228,32 @@ To keep the claim that this is the same system honest:
 - **Five windows, three judging runs.** Enough to separate a 2.02-point effect
   from noise; not enough for a confidence interval worth quoting.
 
+---
+
+## The consumption layer
+
+The briefing was not the deliverable. A **Power BI report** was — a page people
+opened each morning, reading the latest briefing, its status classification and
+its origin breakdown from an authenticated HTTP endpoint on the Function App.
+
+That report lived in a cloud tenant this repository has no access to, and it
+carried the host organisation's data and branding, so it is not here. The
+contract it consumed is, and `make dashboard` exercises it:
+
+![The daily briefing, served over the endpoint the Power BI report read](docs/images/dashboard.png)
+
+`/api/latest` calls [`fetch_latest_report`](src/cybersum/storage.py) — the same
+function the [Azure route](adapters/azure_function/function_app.py) calls, not a
+second query written to resemble it. Everything on the page is a stored column;
+the presentation layer computes nothing, so it cannot introduce a figure the
+grounding check never saw.
+
+The briefing renders verbatim, with nothing parsing Markdown. That one downstream
+fact is why the production prompt spends a paragraph forbidding Markdown and
+mandating uppercase headings, and most of why it is twice the length of the
+evaluation variant — [docs/dashboard.md](docs/dashboard.md) has the endpoint
+contract, the view, and the Power Query M to connect it.
+
 ## Deployment
 
 The system ran daily inside an international organisation's cloud tenant between
@@ -226,17 +267,6 @@ Nothing from that environment is in this repository: no hostnames, addresses,
 credentials, screenshots or telemetry. The Azure Functions entry point in
 [`adapters/azure_function/`](adapters/azure_function) is the deployment shape,
 59 lines translating between the runtime and the pipeline.
-
-## Documentation
-
-| | |
-|---|---|
-| [architecture.md](docs/architecture.md) | the three layers, and the schema-on-read weakness |
-| [findings.md](docs/findings.md) | the grounding failure, twice, and both fixes |
-| [grounding.md](docs/grounding.md) | the deterministic check, and what it cannot tell you |
-| [evaluation.md](docs/evaluation.md) | method, per-window scores, limitations |
-| [contracts.md](docs/contracts.md) | four properties a refactor breaks quietly |
-| [prompts.md](docs/prompts.md) | why two report prompts exist and stay separate |
 
 ## Research origin
 
@@ -252,6 +282,31 @@ Where this repository and the thesis disagree — the cause of the accuracy
 ceiling, and the reproducibility of the published numbers — the repository
 states the current reading and says so explicitly. See
 [docs/findings.md](docs/findings.md).
+
+## Stack and layout
+
+Python 3.12 · Azure Functions · Azure OpenAI / OpenAI `gpt-4o` · PostgreSQL 16 ·
+psycopg2 · Docker Compose · Power BI · pytest · ruff · mypy · GitHub Actions
+
+| Path | |
+|---|---|
+| [`src/cybersum/`](src/cybersum) | the system: aggregation, one model call, grounding, delivery |
+| [`adapters/azure_function/`](adapters/azure_function) | 59 lines between the Functions runtime and the pipeline |
+| [`evaluation/`](evaluation) | the three-group harness, the data generator, and both result sets |
+| [`deploy/`](deploy) | the schema DDL and the throwaway demo database |
+| [`tests/`](tests) | 230 unit, 20 integration, 10 frozen SQL artefacts |
+| [`fixtures/`](fixtures) | the recorded completion the offline demo replays |
+| [`docs/`](docs) | the writeups below |
+
+| | |
+|---|---|
+| [architecture.md](docs/architecture.md) | the three layers, and the schema-on-read weakness |
+| [findings.md](docs/findings.md) | the grounding failure, twice, and both fixes |
+| [grounding.md](docs/grounding.md) | the deterministic check, and what it cannot tell you |
+| [evaluation.md](docs/evaluation.md) | method, per-window scores, limitations |
+| [dashboard.md](docs/dashboard.md) | the endpoint the Power BI report read, and why the prompt bans Markdown |
+| [contracts.md](docs/contracts.md) | four properties a refactor breaks quietly |
+| [prompts.md](docs/prompts.md) | why two report prompts exist and stay separate |
 
 ## Roadmap
 
@@ -270,6 +325,12 @@ Next, in order:
 5. **Human validation of the judge.** The thesis planned a blind human panel and
    used G-Eval instead. Closing that gap is what would make the scores mean
    something outside this repository.
+
+## Author
+
+Built by **Siwei (Maeve) Zhang** — the aggregation layer, the grounding check,
+the three-group evaluation, and the Azure deployment.
+[github.com/maevezhang0129](https://github.com/maevezhang0129)
 
 ## Licence
 

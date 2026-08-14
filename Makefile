@@ -11,7 +11,7 @@ PY := $(shell test -x .venv/bin/python && echo .venv/bin/python || command -v py
 DEMO_ENV := DB_HOST=localhost DB_PORT=5432 DB_NAME=cybersum DB_USER=cybersum DB_PASS=cybersum
 
 .DEFAULT_GOAL := help
-.PHONY: help demo db-up db-wait seed report demo-down test test-all lint typecheck check scan record
+.PHONY: help demo db-up db-wait seed report dashboard demo-down test test-all lint typecheck check scan record
 
 help:  ## Show available targets
 	@grep -hE '^[a-z-]+:.*?## ' $(MAKEFILE_LIST) | awk -F':.*?## ' '{printf "  \033[36m%-14s\033[0m %s\n", $$1, $$2}'
@@ -37,6 +37,9 @@ seed-all:  ## Write all five windows with full history (for the experiment)
 
 report:  ## Generate a briefing beside the facts it was given
 	@$(DEMO_ENV) $(PY) -m cybersum.cli daily-report --window 4 --show-ground-truth
+
+dashboard: db-up db-wait  ## Serve the latest briefing at localhost:8000, as the dashboard read it
+	@$(DEMO_ENV) $(PY) -m cybersum.cli serve --port 8000
 
 record:  ## Re-record the offline cassette (needs OPENAI_API_KEY)
 	@$(DEMO_ENV) $(PY) -m cybersum.cli record --window 4

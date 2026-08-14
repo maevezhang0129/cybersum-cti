@@ -167,6 +167,23 @@ def cmd_record(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_serve(args: argparse.Namespace) -> int:
+    """Serve the latest briefing over the endpoint the dashboard consumed."""
+    from .dashboard import render_static, serve
+
+    settings = _load_settings(args)
+
+    if args.static:
+        destination = Path(args.static)
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        destination.write_text(render_static(settings))
+        print(f"Wrote {destination}")
+        return 0
+
+    serve(settings, port=args.port)
+    return 0
+
+
 def cmd_collect(args: argparse.Namespace) -> int:
     """Run the ingestion collectors once. Needs provider credentials."""
     from .collectors.pipeline import collect_all
@@ -214,6 +231,11 @@ def build_parser() -> argparse.ArgumentParser:
     rec.add_argument("--window", type=int, default=4)
     rec.add_argument("--out", help=f"defaults to {DEFAULT_CASSETTE}")
     rec.set_defaults(func=cmd_record)
+
+    serve = sub.add_parser("serve", help="serve the latest briefing the way the dashboard read it")
+    serve.add_argument("--port", type=int, default=8000)
+    serve.add_argument("--static", metavar="PATH", help="write the page to a file and exit")
+    serve.set_defaults(func=cmd_serve)
 
     collect = sub.add_parser("collect", help="run the ingestion collectors once")
     collect.set_defaults(func=cmd_collect)

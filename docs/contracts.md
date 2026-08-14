@@ -32,6 +32,12 @@ literal delimiters, which the parser then strips back out.
 | `deploy/sql/001_schema.sql` | the `status_code` and `top_5_origins` columns |
 | `src/cybersum/notify.py` | `status_code` in the subject line and header colour |
 
+A fifth consumer arrived with the dashboard renderer, and did not become a fifth
+place: `src/cybersum/dashboard.py` imports `notify.STATUS_COLORS` rather than
+restating the vocabulary. That is the rule this contract implies — a new
+consumer either shares the existing definition or becomes another thing that
+drifts silently.
+
 Change the delimiters, the field names, or the `STABLE / STATUS A / B / C`
 vocabulary in one and the others break quietly.
 

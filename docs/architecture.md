@@ -4,7 +4,7 @@
   external APIs          PostgreSQL              one model call        outputs
   ─────────────          ──────────              ──────────────        ───────
   edge firewall  ──┐                                                ┌─ email
-  uptime monitor ──┼─► logs (JSONB)  ──►  5 SQL signals  ──►  LLM ──┤
+  uptime monitor ──┼─► logs (JSONB)  ──►  7 SQL signals  ──►  LLM ──┤
   infra metrics  ──┘   schema-on-read      fixed context           └─ daily_security_reports
                                                                         └─► dashboard
 ```
@@ -33,14 +33,17 @@ Collectors live in [`src/cybersum/collectors/`](../src/cybersum/collectors). The
 are the only components needing credentials beyond a model key, and nothing in
 the demo or the evaluation runs them.
 
-## Silver — the five signals
+## Silver — the signals
 
 [`aggregation.py`](../src/cybersum/aggregation.py). Never materialised as a
-table; assembled in memory per run.
+table; assembled in memory per run. Five of these produced the thesis numbers and
+are frozen in [`tests/golden/sql/`](../tests/golden/sql); the two aggregates at
+the top were added afterwards, for the reason in [findings.md](findings.md).
 
 | Signal | Answers |
 |---|---|
-| `total_blocked_events` | how much was blocked, in total |
+| `get_total_blocked` | how much was blocked, in total |
+| `get_origin_countries` | how that total splits by origin country |
 | `get_firewall_stats` | which five host/country pairs saw the most |
 | `get_uptime_stats` | which services are not up |
 | `get_azure_stats` | hourly memory average and CPU peak |
@@ -87,6 +90,7 @@ output to a change in prompt or model afterwards.
 | `storage.py` | connection, upsert, log insert, JSON encoding |
 | `notify.py` | HTML email |
 | `pipeline.py` | six named stages and the orchestrator |
+| `dashboard.py` | the briefing over the endpoint the Power BI report read |
 | `cli.py` | the only place that reads `os.environ` or a `.env` |
 | `adapters/azure_function/` | 59 lines translating between the runtime and the pipeline |
 
@@ -97,9 +101,14 @@ be exercised without a database, a network, or a model.
 
 ## Runtime shape
 
-A timer trigger at 08:00 UTC, and an authenticated HTTP endpoint the dashboard
-polls. Serverless because the workload is one short run a day: an always-on VM
-costs roughly USD 1,152 a year to be idle for all but a few seconds of it.
+A timer trigger at 08:00 UTC, and an authenticated HTTP endpoint a Power BI
+report polled once a day. Serverless because the workload is one short run a day:
+an always-on VM costs roughly USD 1,152 a year to be idle for all but a few
+seconds of it.
+
+Neither the report nor the tenant it ran in is in this repository. The endpoint,
+the view it read, and a renderer that consumes the same payload are —
+[dashboard.md](dashboard.md).
 
 The pipeline **never raises**. The Functions runtime retries a failed
 invocation, so an expired key or a malformed row would otherwise become repeated

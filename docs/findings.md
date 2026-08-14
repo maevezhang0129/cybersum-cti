@@ -179,6 +179,13 @@ The same failure, one level down. The arithmetic is correct; the claim is not.
 against any host outside those five contributes nothing — "United States: 1,182"
 reads as a country total and is a floor.
 
+In this dataset the floor happens to be tight. The generator uses four hosts, all
+four United States pairs land in the top five, and `blocked_by_country` now
+confirms the figure at exactly 1,182. That is a property of the fixture, not of
+the query, and the model had no way to tell which case it was in. **A derived
+figure that happens to be right is still ungrounded**, which is the argument for
+a check that asks where a number came from rather than whether it looks plausible.
+
 The fix is the same shape: give the model the aggregate it would otherwise have
 to derive. `blocked_by_country` is a `GROUP BY country` over every row, sitting
 beside the total, with the note extended to say the country column of

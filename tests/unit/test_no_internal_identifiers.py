@@ -56,6 +56,34 @@ def tracked_files() -> list[pathlib.Path]:
     return found
 
 
+def binary_files() -> list[pathlib.Path]:
+    return sorted(
+        path.relative_to(REPO)
+        for path in REPO.rglob("*")
+        if path.is_file()
+        and not SKIP_DIRS & set(path.parts)
+        and path.suffix.lower() in BINARY_SUFFIXES
+    )
+
+
+# An image can carry an internal hostname, an address bar or a real name in
+# pixels, and no regex will see it. Nothing here can scan one -- so instead the
+# set is pinned. A new image cannot appear in the repository without a person
+# adding it to this list, which is the point at which they have to look at it.
+REVIEWED_IMAGES = {
+    pathlib.Path("docs/images/dashboard.png"),  # make dashboard, seed 42, synthetic
+}
+
+
+def test_every_committed_image_has_been_looked_at() -> None:
+    unreviewed = set(binary_files()) - REVIEWED_IMAGES
+    assert not unreviewed, (
+        f"{sorted(map(str, unreviewed))} cannot be scanned for internal "
+        "identifiers. Open each one, confirm it shows nothing belonging to the "
+        "deployment environment, then add it to REVIEWED_IMAGES."
+    )
+
+
 def test_denylist_is_not_empty() -> None:
     """A scan over an empty pattern list passes trivially."""
     assert len(patterns()) >= 5
